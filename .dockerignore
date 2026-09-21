@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+Dockerfile
+docker-compose.yml
+
+# local runtime / secrets — never ship to image
+.env
+.env*.local
+*.log
+
+# git internals
+.gitignore
+
+# docs/scripts/knowledge kept in image:
+#   docs/BUSINESS_RULES.md + CORE_RULES.md are read by app/api/ai/accounting at runtime

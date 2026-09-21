@@ -68,6 +68,33 @@ cron ภายนอก (ตั้งแล้วบนเครื่องพ�
 
 ---
 
+## ส่งมอบแบบ Docker (ขายขาด / ติดตั้งให้ลูกค้า)
+
+```bash
+cp .env.example .env.local
+
+# 1) ออก license ให้ลูกค้า (ฝั่งผู้ขาย — sign ด้วย LICENSE_SALT ตัวเดียวกับฝั่ง app)
+node scripts/issue-license.mjs \
+  --mode perpetual --company "ชื่อลูกค้า" --licensee "อีเมลลูกค้า" \
+  --max-users 5
+
+# 2) ใส่ค่าจริงใน .env.local (ของเครื่องลูกค้า):
+#    LICENSE_SALT   = salt เดียวกับฝั่งผู้ขาย
+#    MBS_LICENSE_KEY = license key ที่ออกให้ลูกค้ารายนี้
+#    DATABASE_URL   = postgresql://mbs:mbs@db:5432/mbs?sslmode=disable
+#    NEXTAUTH_SECRET / AUTH_SECRET = random secret
+
+# 3) รัน (สร้าง PostgreSQL + app พร้อมกัน — schema โหลดอัตโนมัติ)
+docker compose up -d --build
+```
+
+- เปิดแอพที่: `http://localhost:3000`
+- สร้าง admin ครั้งแรก: หน้า `/register` → register แล้วกด `promote` เป็น superadmin
+- **license lock:** production (`docker compose`) จะ fail-fast ถ้า `MBS_LICENSE_KEY` ผิด/หมดอายุ (subscription) — perpetual ไม่หมดอายุ, subscription หมดอายุเมื่อถึง `expires_at`
+- โหมดการขาย: `PRODUCT_MODE=perpetual` (ขายขาด) หรือ `PRODUCT_MODE=subscription` (เช่า รายเดือน)
+
+---
+
 ## เทคนิค
 
 - **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5

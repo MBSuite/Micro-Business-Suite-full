@@ -1,0 +1,77 @@
+# ============================================================
+# Micro Business Suite — Docker Compose (production delivery)
+#   app   : Next.js standalone (build from Dockerfile)
+#   postgres: PostgreSQL 16 (init schema จาก scripts/backup.sql)
+#
+# วิธีใช้:
+#   cp .env.example .env.local
+#   # แก้ .env.local: LICENSE_SALT, MBS_LICENSE_KEY, NEXTAUTH_SECRET,
+#   #   DATABASE_URL=postgresql://mbs:mbs@db:5432/mbs?sslmode=disable
+#   docker compose up -d --build
+# ============================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mbs-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mbs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mbs}
+      POSTGRES_DB: mbs
+    volumes:
+      - mbs-db-data:/var/lib/postgresql/data
+      - ./scripts/backup.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./scripts/init-chart-of-accounts.sql:/docker-entrypoint-initdb.d/02-chart-of-accounts.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mbs -d mbs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mbs-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      # DB — ต่อในเครือข่าย compose (sslmode=disable สำหรับ local postgres)
+      POSTGRES_URL: postgresql://mbs:${POSTGRES_PASSWORD:-mbs}@db:5432/mbs?sslmode=disable
+      DATABASE_URL: postgresql://mbs:${POSTGRES_PASSWORD:-mbs}@db:5432/mbs?sslmode=disable
+      # Auth
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE:-86400}
+      # Product / License
+      PRODUCT_MODE: ${PRODUCT_MODE:-perpetual}
+      LICENSE_SALT: ${LICENSE_SALT}
+      MBS_LICENSE_KEY: ${MBS_LICENSE_KEY}
+      # Google OAuth (ไม่บังคับ — เว้นว่างได้ถ้ายังไม่ตั้ง)
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REFRESH_TOKEN: ${GOOGLE_REFRESH_TOKEN:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+      NEXT_PUBLIC_GOOGLE_API_KEY: ${NEXT_PUBLIC_GOOGLE_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GMAIL_FROM: ${GMAIL_FROM:-}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD:-}
+      CRON_ENABLED: ${CRON_ENABLED:-false}
+      RECURRING_SECRET: ${RECURRING_SECRET:-}
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  mbs-db-data:
