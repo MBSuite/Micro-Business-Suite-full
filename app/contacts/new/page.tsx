@@ -117,7 +117,7 @@ export default function NewContactPage() {
                                  value={formData.name}
                                  onChange={e => setFormData({...formData, name: e.target.value})}
                                  className="w-full h-14 pl-5 pr-5 bg-slate-50 border border-slate-200 rounded-2xl focus:border-indigo-500 focus:bg-white text-sm font-bold text-slate-700 outline-none transition-all" 
-                                 placeholder="บริษัท ไมโครทรอนิก จำกัด" 
+                                 placeholder="ชื่อบริษัทลูกค้า" 
                                />
                             </div>
                          </div>
@@ -226,7 +226,7 @@ export default function NewContactPage() {
         </form>
 
         <div className="text-center text-slate-300 text-[10px] font-black uppercase tracking-[0.8em] py-10">
-           Microtronic CRM Module v2.1
+           Micro Business Suite CRM Module v2.1
         </div>
       </div>
     </main>

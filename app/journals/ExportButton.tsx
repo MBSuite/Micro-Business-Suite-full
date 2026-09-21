@@ -46,7 +46,7 @@ const ExportButton = () => {
           <body>
             <div class="header">
               <h1>GENERAL JOURNAL REPORT</h1>
-              <p>MICRO ACCOUNTING SYSTEM | INNOVATION FOR THE FUTURE</p>
+              <p>MICRO BUSINESS SUITE | INNOVATION FOR THE FUTURE</p>
               <p>วันที่พิมพ์: ${new Date().toLocaleString('th-TH')}</p>
             </div>
             <table>
@@ -74,7 +74,7 @@ const ExportButton = () => {
               </tbody>
             </table>
             <div class="footer">
-              <p>© 2026 บริษัท ไมโครทรอนิก (ไทยแลนด์) จำกัด</p>
+              <p>© {new Date().getFullYear()} {companyName || "YOUR COMPANY"}</p>
             </div>
             <script>
               window.onload = function() { 

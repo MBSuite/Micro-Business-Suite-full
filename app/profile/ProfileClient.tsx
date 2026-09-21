@@ -16,7 +16,7 @@ interface Member {
 export default function ProfileClient({ member }: { member: Member | null }) {
   const normalizedRole = normalizeRole(member?.role);
   const [name, setName] = useState(member?.name || "Administrator");
-  const [email, setEmail] = useState(member?.email || "admin@microtronic.biz");
+  const [email, setEmail] = useState(member?.email || "");
   const [phone, setPhone] = useState(member?.phone || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

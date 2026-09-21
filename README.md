@@ -38,8 +38,7 @@
 - ปุ่มสรุปยอดรายเดือนส่งขึ้น **Google Drive**
 - **Auto-backup ฐานข้อมูล** ขึ้น Drive ทุกวัน 02:00 (เก็บ 30 วัน) — `scripts/auto-backup.mjs`
 - **Sheets Dashboard** ภาพรวมรายเดือน/รายจ่ายแยกหมวด/รายการล่าสุด อัปเดต 02:05 — `scripts/dashboard-sheet.mjs`
-- **Calendar เตือนอัตโนมัติ** (จ่ายบิล Google Workspace, ต่ออายุลูกค้า) — `scripts/calendar-reminders.mjs`
-- รายการแอพในสิทธิ์ + แผนใช้ประโยชน์: `docs/GWS_APPS_INVENTORY.md`
+- **Calendar เตือนอัตโนมัติ** — จ่ายบิล Google Workspace, ต่ออายุลูกค้า (ต้องการ config ผู้ใช้เพิ่มเติม)
 
 ### การจัดการ (Admin)
 - จัดการสมาชิก / บทบาท (RBAC) ตาม `docs/RBAC_STANDARD.md`
@@ -85,7 +84,6 @@ cron ภายนอก (ตั้งแล้วบนเครื่องพ�
 - กฎระบบหลัก: `CORE_RULES.md`, `AUTH_RULES.md`
 - มาตรฐานสิทธิ์: `docs/RBAC_STANDARD.md`
 - คู่มือใช้งาน: `docs/USER_MANUAL.md`, `docs/COMPLETE_MANUAL.md`
-- คู่มือตัวดำเนินงาน: `docs/OPERATION_RUNBOOK.md`
 - ความรู้ทางภาษี: `docs/THAI_TAX_GUIDE.md`, `docs/KNOWLEDGE_PACK.md`
 - สถาปัตยกรรม: `docs/ARCHITECTURE.md`
 - บันทึกการตัดสินใจ: `docs/DECISIONS.md`

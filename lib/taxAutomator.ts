@@ -1,5 +1,4 @@
-export const COMPANY_TAX_ID = '0105561182888';
-export const COMPANY_ADDRESS = '136/34 ถ.ประดิพัทธ์ แขวงพญาไท เขตพญาไท กรุงเทพฯ';
+import { getCompanySettings } from '@/lib/settings';
 
 // ระบบ e-Filing กรมสรรพากร — ลิงก์ตรงเข้าฟอร์มยื่นจริง (RD e-Filing)
 // บันทึกโดยพี่กีโร่ 2026-09-21: pnd53/pnd51 ไม่ได้ยื่นทุกเดือน แต่ควรมีลิงก์ไว้
@@ -27,16 +26,23 @@ export interface InvoiceDetails {
 export class InputTaxValidator {
   /**
    * คัดกรองใบกำกับภาษีซื้อ (Vat Input Validation)
+   * ระบุตัวตนผู้เสียภาษี (tax_id/address) อ่านจาก company_settings
    */
-  static validate(invoice: InvoiceDetails) {
+  static async validate(invoice: InvoiceDetails) {
     const errors: string[] = [];
     let isForbiddenTax = false;
     let capitalizedExpense = invoice.netAmount;
 
     // Logic 1: Tax ID & Address Match
-    if ((invoice.taxId && invoice.taxId !== COMPANY_TAX_ID) || (invoice.address && invoice.address !== COMPANY_ADDRESS)) {
+    const company = await getCompanySettings();
+    const companyTaxId = company.data?.tax_id || '';
+    const companyAddress = company.data?.address || '';
+    if (
+      (invoice.taxId && companyTaxId && invoice.taxId !== companyTaxId) ||
+      (invoice.address && companyAddress && invoice.address !== companyAddress)
+    ) {
       isForbiddenTax = true;
-      errors.push(`ข้อมูลระบุตัวตนผู้เสียภาษีไม่ตรงกับบริษัท (ต้องเป็น ${COMPANY_TAX_ID} และที่อยู่ ${COMPANY_ADDRESS})`);
+      errors.push(`ข้อมูลระบุตัวตนผู้เสียภาษีไม่ตรงกับบริษัท (ต้องเป็น ${companyTaxId} และที่อยู่ ${companyAddress})`);
     }
 
     // Logic 2: Forbidden Tax (ภาษีซื้อต้องห้าม)

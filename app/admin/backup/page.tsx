@@ -55,7 +55,7 @@ export default function BackupPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `micro_account_backup_${new Date().toISOString().split('T')[0]}.${format}`;
+      a.download = `mbs_backup_${new Date().toISOString().split('T')[0]}.${format}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -225,7 +225,7 @@ export default function BackupPage() {
         </div>
 
         <div className="text-center mt-20 opacity-20 hover:opacity-100 transition-opacity">
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">System Recovery Console • Microtronic Labs 2026</p>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">System Recovery Console • Micro Business Suite 2026</p>
         </div>
       </div>
     </main>

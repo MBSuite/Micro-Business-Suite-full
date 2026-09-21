@@ -81,7 +81,7 @@ export default async function QuotationPreviewPage({ params }: { params: Promise
         <div className="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-6">
           <div className="w-1/2">
             <h1 className="text-2xl font-black text-slate-900 tracking-tighter mb-1">
-              {company?.name || "MICROTRONIC THAILAND"}
+              {company?.name || "YOUR COMPANY CO., LTD."}
             </h1>
             <p className="text-xs font-medium text-slate-600 leading-tight whitespace-pre-wrap">
               {company?.address || "123 Business Road, District, Province\nTax ID: 0000000000000"}

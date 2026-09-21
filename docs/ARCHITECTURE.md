@@ -32,7 +32,7 @@
 - Endpoint: `GET /api/fx-rate` → latest USD/THB + 30d series + trend (low/high/%change)
 - Source: Bank of Thailand reference rate via `https://api.frankfurter.dev/v2` (`providers=BOT`)
 - Server-side cache: latest 6h, series 24h (in-memory Map)
-- Used by invoice creation "FX Mode": prefill `fxRate` and monitor currency movement before billing Dominick (markup 25% / USD cost per decision 2026-09-21)
+- Used by invoice creation "FX Mode": prefill `fxRate` and monitor currency movement before billing (billing policy is configured per installation via company settings)
 
 ## Stability Rules
 

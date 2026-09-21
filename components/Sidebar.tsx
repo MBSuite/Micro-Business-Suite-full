@@ -124,7 +124,7 @@ export default function Sidebar({
             <div className="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-violet-200">
                M
             </div>
-            <span className="font-black text-slate-800 tracking-tighter text-sm uppercase">Micro Account</span>
+            <span className="font-black text-slate-800 tracking-tighter text-sm uppercase">Micro Business Suite</span>
          </div>
          <button 
            onClick={() => setIsMobileOpen(true)}

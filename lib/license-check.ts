@@ -228,7 +228,7 @@ async function logLicenseActivity(
 export function withLicenseCheck(feature: string = 'basic_access') {
   return async function middleware(request: NextRequest) {
     // Get license info from headers or environment
-    const licenseKey = request.headers.get('x-license-key') || process.env.MICRO_ACCOUNT_LICENSE;
+    const licenseKey = request.headers.get('x-license-key') || process.env.MBS_LICENSE_KEY;
     const machineId = request.headers.get('x-machine-id') || generateMachineFingerprint();
     
     if (!licenseKey) {

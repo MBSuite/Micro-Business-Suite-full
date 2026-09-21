@@ -21,9 +21,9 @@ async function dumpDatabase(pool) {
   }
   return {
     meta: {
-      kind: "micro-account-db-backup",
+      kind: "micro-business-suite-db-backup",
       created_at: new Date().toISOString(),
-      source: "grids@microtronic.biz",
+      source: "auto-backup.mjs",
       table_count: Object.keys(tables).length,
     },
     tables,

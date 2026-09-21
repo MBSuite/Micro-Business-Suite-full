@@ -183,7 +183,7 @@ export default async function QuotationsPage({ searchParams }: { searchParams: {
 
         {/* Pro Footer */}
         <div className="text-center py-10 opacity-30">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.6em]">Microtronic Thailand • Commercial Excellence • 2026</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.6em]">Micro Business Suite • Commercial Excellence • 2026</p>
         </div>
       </div>
     </main>

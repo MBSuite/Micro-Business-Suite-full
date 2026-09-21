@@ -3,7 +3,7 @@
 --          (e.g. Google Workspace billed on card with TC rate) so ภ.พ. 36
 --          reverse-charge draft skips them — they are not self-assessed VAT.
 -- Created: 2026-09-21
--- Reason: ใบแจ้งยอด KTC 20/07/26 — Google Workspace เรียกเก็บ USD ผ่านบัตร、
+-- Reason: บิลบริการต่างประเทศ (เช่น Google Workspace เรียกเก็บ USD ผ่านบัตรเครดิต)
 --         VAT ถูกเรียกเก็บจากผู้ให้บริการแล้ว ไม่ใช่ reverse charge
 
 ALTER TABLE expenses

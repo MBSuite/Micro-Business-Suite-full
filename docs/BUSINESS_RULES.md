@@ -24,7 +24,7 @@
 
 - **Before recording any expense, always extract/read the source PDF (invoice/statement) first** using the PDF tool:
   `~/workspace/services/python/pdf-tools` (`pdf_toolkit.py`: `extract_text_pdfplumber`, `extract_text_pypdf`, `pdf_to_images`)
-- Extract actual amounts, VAT, currency, exchange rate (e.g. TC rate on KTC statements) from the PDF — never guess numbers
+- Extract actual amounts, VAT, currency, exchange rate (e.g. statement exchange rate) from the PDF — never guess numbers
 - Record `net_amount` / `vat_amount` / `original_currency` / `original_amount` / `exchange_rate` to match the PDF evidence
 - Flag `pp36_exempt = true` **only** when evidence proves the supplier already collected Thai VAT
 - **Google Workspace = reverse charge ต้องยื่น ภ.พ.36** — ใบกำกับสิงคโปร์ (GST 0%, "เอกสารนี้ไม่ใช่ใบกำกับภาษีของประเทศไทย") → `pp36_exempt = false`, **ภาษีซื้อ = เงินที่จ่ายจริง THB × 7%** (อ้างอิงแนววินิจฉัย กค 0702/6764 "อัตราร้อยละ 7.0 ของเงินที่จ่าย"; **ไม่ใช่ 7/107** เพราะบิลไม่รวม VAT ไทย — เงินที่จ่ายทั้งหมด = ฐานภาษี; ยืนยันจากแบบ ส.ค.2026 ที่ยื่นแล้วใช้วิธี ×7%, 2026-09-21)

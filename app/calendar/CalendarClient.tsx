@@ -183,7 +183,7 @@ export default function CalendarClient({ initialReminders }: { initialReminders:
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">หัวข้องานสำคัญ</label>
                     <input 
                       type="text" 
-                      placeholder="เช่น วางบิลบริษัท Microtronic..." 
+                      placeholder="เช่น วางบิลบริษัทลูกค้า..." 
                       className="w-full h-14 px-6 bg-slate-50 border border-transparent focus:border-indigo-500 rounded-2xl font-black text-slate-700 outline-none transition-all"
                       value={newTitle}
                       onChange={e => setNewTitle(e.target.value)}

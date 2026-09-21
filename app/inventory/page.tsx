@@ -173,7 +173,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: { 
 
         {/* Professional Footer */}
         <div className="text-center py-10 opacity-30">
-           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.6em] mb-2">Microtronic Thailand • Autonomous Logistics Edge • 2026</p>
+           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.6em] mb-2">Micro Business Suite • Autonomous Logistics Edge • 2026</p>
            <p className="text-[8px] font-medium text-slate-300 uppercase italic">Powering the future of digitized supply chains</p>
         </div>
       </div>

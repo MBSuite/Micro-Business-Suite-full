@@ -11,8 +11,6 @@ const REQUIRED_DOCS = [
   "docs/BUSINESS_RULES.md",
   "docs/ARCHITECTURE.md",
   "docs/DECISIONS.md",
-  "docs/OPERATION_RUNBOOK.md",
-  "docs/INCIDENT_LOG.md",
   "docs/CHANGELOG_PROJECT.md",
 ];
 

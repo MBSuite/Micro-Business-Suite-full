@@ -8,7 +8,7 @@ import { getOrCreateFolder } from "@/lib/actions-helpers";
 export async function uploadToGoogleDrive(base64Data: string, fileName: string, mimeType: string) {
   try {
     const googleDrive = await getGoogleDrive();
-    const folderId = await getOrCreateFolder("Micro Account Documents");
+    const folderId = await getOrCreateFolder("Micro Business Suite Documents");
     const buffer = Buffer.from(base64Data.split(",")[1] || base64Data, "base64");
     const stream = Readable.from(buffer);
     const response = await googleDrive.files.create({
@@ -50,11 +50,11 @@ export async function exportJournalsToSheets() {
     const result = await getJournalEntries();
     if (!result.success || !result.data || result.data.length === 0) throw new Error("ไม่มีข้อมูลให้ส่งออก");
     const entries = result.data;
-    const folderId = await getOrCreateFolder('Micro Account Reports');
+    const folderId = await getOrCreateFolder('Micro Business Suite Reports');
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: {
         properties: {
-          title: `Micro Account - รายงานสมุดรายวัน (${new Date().toLocaleDateString('th-TH')})`,
+          title: `Micro Business Suite - รายงานสมุดรายวัน (${new Date().toLocaleDateString('th-TH')})`,
         },
       },
     });
@@ -102,7 +102,7 @@ export async function exportVouchersToSheets() {
     const res = await query('SELECT * FROM payment_vouchers ORDER BY issue_date DESC, id ASC');
     const vouchers = res.rows;
     if (vouchers.length === 0) throw new Error("No data");
-    const folderId = await getOrCreateFolder('Micro Account Reports');
+    const folderId = await getOrCreateFolder('Micro Business Suite Reports');
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: { properties: { title: `Voucher Report ${new Date().toLocaleDateString('th-TH')}` } }
     });

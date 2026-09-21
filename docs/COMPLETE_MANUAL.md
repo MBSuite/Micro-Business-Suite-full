@@ -1,4 +1,4 @@
-# 📘 คู่มือการใช้งาน Micro-Account ฉบับสมบูรณ์
+# 📘 คู่มือการใช้งาน Micro Business Suite ฉบับสมบูรณ์
 ## ระบบบัญชีอัจฉริยะสำหรับธุรกิจยุคใหม่
 
 ---
@@ -36,7 +36,7 @@
 ## 1. ภาพรวมระบบ
 
 ### 🎯 ระบบจัดการสิทธิ์ (RBAC)
-Micro-Account ใช้ระบบ **Role-Based Access Control (RBAC)** ที่มีความละเอียดถึง 6 ระดับ:
+Micro Business Suite ใช้ระบบ **Role-Based Access Control (RBAC)** ที่มีความละเอียดถึง 6 ระดับ:
 - **Create** - สร้าง/เพิ่มข้อมูล
 - **Read** - อ่าน/ดูข้อมูล
 - **Update** - แก้ไขข้อมูล
@@ -464,13 +464,13 @@ Micro-Account ใช้ระบบ **Role-Based Access Control (RBAC)** ที�
 
 ### การติดต่อสนับสนุน
 
-- 📧 อีเมล: support@microtronic.dev
-- 📞 โทร: +66 8 1234 5678
+- 📧 อีเมล: support@your-company.com
+- 📞 โทร: +66 0 0000 0000
 
 ---
 
-© 2026 บริษัท ไมโครทรอนิก (ไทยแลนด์) จำกัด
-**Micro-Account** - ระบบบัญชีอัจฉริยะ
+© 2026 Micro Business Suite
+**Micro Business Suite** - ระบบบัญชีอัจฉริยะ
 ---
 
 ## 8. Invoice Journal Stability Rules

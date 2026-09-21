@@ -130,9 +130,9 @@ export default async function Wht53Page({ params }: { params: Promise<{ id: stri
             <div className="grid grid-cols-1 gap-6 border p-6 mb-6 pb-8">
               <div>
                 <span className="font-bold">ผู้มีหน้าที่หักภาษี ณ ที่จ่าย:</span>
-                <p className="mt-1">{company.name || "MICROTRONIC (THAILAND) CO., LTD."}</p>
-                <p>{company.address || "136/34 หมู่ที่ 4 ถนนพหลโยธิน ตำบลคูคต อำเภอลำลูกกา จังหวัดปทุมธานี 12130"}</p>
-                <p>เลขประจำตัวผู้เสียภาษี: {company.tax_id || "0105561182888"}</p>
+                <p className="mt-1">{company.name || "YOUR COMPANY CO., LTD."}</p>
+                <p>{company.address || "Your Company Address"}</p>
+                <p>เลขประจำตัวผู้เสียภาษี: {company.tax_id || "0000000000000"}</p>
               </div>
 
               <div className="border-t pt-6">
@@ -191,7 +191,7 @@ export default async function Wht53Page({ params }: { params: Promise<{ id: stri
             <div className="mt-8 text-sm space-y-2">
               <p>ข้าพเจ้าขอรับรองว่า ข้อความข้างต้นเป็นความจริงทุกประการ</p>
               <p className="mt-4">ลงชื่อ .................................................. ผู้มีหน้าที่หักภาษี</p>
-              <p className="mt-2">( {company.name || "MICROTRONIC (THAILAND) CO., LTD."} )</p>
+              <p className="mt-2">( {company.name || "YOUR COMPANY CO., LTD."} )</p>
               <p className="mt-1">วันที่ ................../................../................</p>
             </div>
 

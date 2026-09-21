@@ -48,7 +48,7 @@ function createOAuth2Client(clientId: string, clientSecret: string, redirectUri:
  * สร้าง Service Account Auth
  */
 function createServiceAccountAuth() {
-  const SERVICE_ACCOUNT_FILE = path.join(process.cwd(), 'microtronic-finance-bot-4f97b39e64d1.json');
+  const SERVICE_ACCOUNT_FILE = path.join(process.cwd(), 'google-service-account.json');
   const authOptions: any = {
     scopes: [
       'https://www.googleapis.com/auth/drive',

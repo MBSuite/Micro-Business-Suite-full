@@ -83,7 +83,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
                   </div>
                   <div>
                     <h1 className="text-xl font-black leading-none tracking-tight text-slate-900">
-                      {company.name || "MICROTRONIC (THAILAND) CO., LTD."}
+                      {company.name || "YOUR COMPANY CO., LTD."}
                     </h1>
                     <p className="mt-2 text-[9px] font-black uppercase tracking-[0.4em] text-violet-500">
                       Tax Invoice Automation
@@ -140,11 +140,17 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
             </div>
 
             <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-violet-100 bg-white/50 p-8">
-              <img
-                src="/microtronic_logo6.png"
-                alt="Microtronic Watermark"
-                className="w-16 h-16 opacity-[0.20]" // [CHANGE] - โดย Cascade | [DATE] - 2026-04-02 | [REASON] - เปลี่ยนโลโก้เป็น Microtronic
-              />
+              {company.logo_url ? (
+                <img
+                  src={company.logo_url}
+                  alt="Company Watermark"
+                  className="w-16 h-16 opacity-[0.20]"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center">
+                  <span className="text-[10px] font-black text-violet-400">MBS</span>
+                </div>
+              )}
               <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-slate-400">Verified Digital Document</p>
               <p className="mt-1 text-[8px] font-bold text-slate-300">Invoice ready for print</p>
             </div>
@@ -228,7 +234,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
               <div className="space-y-2">
                 <h4 className="text-[10px] uppercase tracking-widest text-slate-400">
                   {/* [CHANGE] - โดย Cascade | [DATE] - 2026-04-02 | [REASON] - ข้อความด้านบน */}
-                  {'บริษัท ไมโครทรอนิก (ไทยแลนด์) จำกัด'}
+                  {company.name}
                 </h4>
                 <div className="flex items-end gap-4 pt-8">
                   <div className="flex-1 border-b-2 border-dashed border-slate-300 pb-1 flex flex-col items-center">
@@ -264,7 +270,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
         </div>
 
         <div className="pb-20 text-center text-[10px] font-black uppercase tracking-[0.6em] text-slate-400 opacity-30 print:hidden">
-          Microtronic Billing Day Ready
+          Micro Business Suite Billing Day Ready
         </div>
       </div>
 

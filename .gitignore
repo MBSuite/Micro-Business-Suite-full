@@ -24,7 +24,7 @@ bug-report.zip
 # 
 # IMPORTANT: If any credentials were truly live when committed, 
 # they must be ROTATED IMMEDIATELY at their respective services.
-microtronic-finance-bot-*.json
+*-finance-bot-*.json
 service_account.json
 client_secret_*.json
 .env
@@ -35,7 +35,7 @@ secret.txt
 *.pem
 *.db
 *.sqlite3
-**/microtronic-finance-bot-*.json
+**/*-finance-bot-*.json
 **/service_account.json
 **/client_secret_*.json
 **/.env
@@ -57,6 +57,6 @@ yarn-error.log*
 # site/
 tmp/
 
-# KTC bank statements (private financial info - keep LOCAL only, commit only README summary)
+# Bank statements (private financial info - keep LOCAL only, commit only summary)
 docs/statements/*.pdf
 *.tsbuildinfo

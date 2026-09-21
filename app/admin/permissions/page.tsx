@@ -165,7 +165,7 @@ export default function PermissionsPage() {
         </div>
 
         <div className="py-10 text-center opacity-30">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em]">Microtronic Security Shield • RBAC v2.1</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em]">Micro Business Suite Security Shield • RBAC v2.1</p>
         </div>
       </div>
     </main>

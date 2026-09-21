@@ -4,8 +4,6 @@ import { roundThaiTaxAmount } from "@/lib/tax";
 import { getCurrentMonthPL } from "@/lib/reports";
 import { TaxCalendarAlerts } from "@/lib/taxAutomator";
 
-export const COMPANY_TAX_ID = '0105561182888';
-
 // ---------- Types ----------
 
 export interface AuditFinding {

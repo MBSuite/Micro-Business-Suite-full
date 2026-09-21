@@ -1,6 +1,6 @@
 import { dbPool, googleAuth, drive } from "./google-auth.mjs";
 
-const TITLE = "Micro-Account Dashboard (Auto)";
+const TITLE = "Micro Business Suite Dashboard (Auto)";
 const SHEETS = ["ภาพรวมรายเดือน", "รายจ่ายแยกหมวด", "รายการล่าสุด"];
 
 const round2 = (n) => (n == null ? 0 : Math.round(n * 100) / 100);

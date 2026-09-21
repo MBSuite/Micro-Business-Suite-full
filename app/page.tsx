@@ -410,7 +410,7 @@ export default async function Dashboard() {
         </div>
 
         <div className="text-center py-10 opacity-30">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em]">Microtronic Enterprise Ledger • 2026 Edition</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em]">Micro Business Suite Enterprise Ledger • 2026 Edition</p>
         </div>
 
       </div>

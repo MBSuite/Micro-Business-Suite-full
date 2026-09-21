@@ -391,7 +391,7 @@ export default function PaymentVouchersPage() {
 
         {/* Footer Text */}
         <div className="text-center text-gray-400 text-xs font-medium pb-8 border-t border-gray-200 pt-6 mt-12">
-          <p className="font-bold mb-1">© 2026 สงวนลิขสิทธิ์โดย บริษัท ไมโครทรอนิก (ไทยแลนด์) จำกัด</p>
+          <p className="font-bold mb-1">© 2026 สงวนลิขสิทธิ์โดย Micro Business Suite</p>
           <p className="italic opacity-80">เราสร้าง Software เฉพาะทาง เพื่อขับเคลื่อนธุรกิจให้ก้าวล้ำ</p>
         </div>
       </div>
@@ -509,7 +509,7 @@ export default function PaymentVouchersPage() {
           </div>
 
           <div style="text-align: center; margin-top: 40px; font-size: 11px; color: #94a3b8;">
-            รายงานนี้สร้างจากระบบ Micro-Account | วันที่พิมพ์: ${formatDateDisplay(new Date())}
+            รายงานนี้สร้างจากระบบ Micro Business Suite | วันที่พิมพ์: ${formatDateDisplay(new Date())}
           </div>
         </body>
       </html>

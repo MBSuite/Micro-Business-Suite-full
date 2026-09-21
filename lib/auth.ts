@@ -59,7 +59,7 @@ async function ensureCompanyLicensingSchema() {
   const companyCountRes = await query(`SELECT COUNT(*)::int AS count FROM companies`);
   if (Number(companyCountRes.rows[0]?.count || 0) === 0) {
     const settingsRes = await query(`SELECT name FROM company_settings LIMIT 1`).catch(() => ({ rows: [] }));
-    const defaultCompanyName = settingsRes.rows[0]?.name || "Microtronic Thailand";
+    const defaultCompanyName = settingsRes.rows[0]?.name || "Your Company";
 
     await query(
       `

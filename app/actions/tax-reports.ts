@@ -1,6 +1,7 @@
 "use server";
 
 import { query } from "@/lib/db";
+import { getCompanySettings } from "@/lib/settings";
 import { revalidatePath } from "next/cache";
 import {
   initializeRDClient,
@@ -129,7 +130,9 @@ export async function exportPP30ToTxt(month: number, year: number): Promise<{ su
       return { success: false, error: draft.error || "ไม่พบข้อมูล ภ.พ. 30" };
     }
     const d = draft.data;
-    const header = `สรุปข้อมูล ภ.พ. 30 (ไมโครทรอนิก (ไทยแลนด์) จำกัด / VAT 0105561182888)\n`;
+    const company = await getCompanySettings();
+    const companyHeader = `${company.data?.company_name || "YOUR COMPANY"} (VAT ${company.data?.tax_id || "0000000000000"})`;
+    const header = `สรุปข้อมูล ภ.พ. 30 (${companyHeader})\n`;
     const period = `ช่วงเวลา: ${String(month).padStart(2, "0")}/${year}\n`;
     const rows = [
       `ภาษีขาย (Output VAT) = ${Number(d.sales.vatAmount).toFixed(2)} บาท (ฐาน ${Number(d.sales.taxableAmount).toFixed(2)}, ${d.sales.documentCount} ฉบับ)`,
@@ -149,8 +152,10 @@ export async function exportPND53ToTxt(month: number, year: number): Promise<{ s
       return { success: false, error: draft.error || "ไม่พบข้อมูล ภ.ง.ด. 53" };
     }
     const d = draft.data;
+    const company = await getCompanySettings();
+    const companyHeader = `${company.data?.company_name || "YOUR COMPANY"} (VAT ${company.data?.tax_id || "0000000000000"})`;
     const text = [
-      `สรุปข้อมูล ภ.ง.ด. 53 (ไมโครทรอนิก (ไทยแลนด์) จำกัด / VAT 0105561182888)`,
+      `สรุปข้อมูล ภ.ง.ด. 53 (${companyHeader})`,
       `ช่วงเวลา: ${String(month).padStart(2, "0")}/${year}`,
       `จำนวนรายการ: ${d.documentCount} รายการ`,
       `รวมภาษีหัก ณ ที่จ่าย = ${Number(d.totalWHT).toFixed(2)} บาท`,
@@ -182,7 +187,7 @@ export async function exportMonthlySummaryToDrive() {
     const { getOrCreateFolder } = await import("@/lib/actions-helpers");
     const { getGoogleSheets } = await import("@/lib/google-server");
     const googleSheets = await getGoogleSheets();
-    const folderId = await getOrCreateFolder("Micro Account Reports");
+    const folderId = await getOrCreateFolder("Micro Business Suite Reports");
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: { properties: { title: `Budget Summary ${now.getMonth() + 1}/${now.getFullYear()}` } }
     });

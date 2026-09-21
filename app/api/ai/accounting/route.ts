@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     // 📂 อ่านข้อมูลกฎระเบียบและคู่มือภาษีของบริษัท (Context Injection)
     const coreRulesPath = path.join(process.cwd(), 'CORE_RULES.md');
     const taxGuidePath = path.join(process.cwd(), 'docs', 'THAI_TAX_GUIDE.md');
-    const businessContextPath = path.join(process.cwd(), 'docs', 'BUSINESS_CONTEXT.md');
+    const businessContextPath = path.join(process.cwd(), 'docs', 'BUSINESS_RULES.md');
     const supplierGuidePath = path.join(process.cwd(), 'docs', 'SUPPLIER_INVOICE_GUIDE.md');
 
     let coreRules = "";
@@ -61,11 +61,11 @@ export async function POST(request: Request) {
 
       --- กฎเหล็กในการตอบคำถาม ---
       1. โมเดลธุรกิจเราคือ "ตัวกลาง (Intermediary)" รายได้คือส่วนต่างกำไรจากการขาย License/บริการ
-      2. ภาษีหัก ณ ที่จ่าย (WHT) สำหรับ License/บริการ ให้ใช้ **3%** เสมอ (ตาม BUSINESS_CONTEXT.md)
+      2. ภาษีหัก ณ ที่จ่าย (WHT) สำหรับ License/บริการ ให้ใช้ **3%** เสมอ (ตาม BUSINESS_RULES.md)
       3. การบันทึกบัญชีต้องใช้รหัสให้ถูกต้อง: 
          - รายได้: 4110 | ลูกหนี้: 1121
          - ภาษีขาย: 2121 | ภาษีซื้อ: 1141
-         - เจ้าหนี้: 2110 (เช่น Noventiq) | ต้นทุน: 5110
+         - เจ้าหนี้: 2110 (เช่น ผู้จัดจำหน่ายซอฟต์แวร์) | ต้นทุน: 5110
          - ภาษีค้างจ่าย (WHT): 2130
       4. หากลูกค้าถามเรื่องการลงเอกสาร หรือตั้งราคา ให้ให้คำตอบแบบที่ปรึกษาผู้บริหาร (Consultant Style) ฟันธงชัดเจน
       5. ตอบเป็นภาษาไทยที่สุภาพ เข้าใจง่าย รวดเร็ว และเน้นช่วยแก้ปัญหา (สไตล์เพื่อนคู่คิดธุรกิจ)

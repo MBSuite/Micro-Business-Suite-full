@@ -1,7 +1,7 @@
 # =====================================================
-# Micro-Account: Core System Rules & Blueprint
+# Micro Business Suite: Core System Rules & Blueprint
 # Critical System Architecture and Guardrails
-# Copyright (c) 2026 Micro-Account. All Rights Reserved.
+# Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
 # =====================================================
 
 ## 🚨 CRITICAL GUARDRAILS
@@ -105,7 +105,7 @@ CREATE TABLE users (
 ```sql
 CREATE TABLE company_settings (
     id SERIAL PRIMARY KEY,                    -- Primary key for company settings
-    company_name VARCHAR(255) NOT NULL DEFAULT 'Micro-Account', -- Company name displayed on dashboard
+    company_name VARCHAR(255) NOT NULL DEFAULT 'Micro Business Suite', -- Company name displayed on dashboard
     tax_id VARCHAR(50) NOT NULL DEFAULT '',   -- Company tax identification number
     address TEXT,                              -- Company address for documents
     logo_url TEXT,                            -- URL to company logo for documents
@@ -365,7 +365,7 @@ CREATE TABLE activity_log (
 ```sql
 -- Emergency data restoration (run ONLY if data wiped)
 INSERT INTO company_settings (company_name, tax_id, address) 
-VALUES ('Micro-Account Professional', '123456789012', '123 Accounting Street, Bangkok, Thailand')
+VALUES ('Micro Business Suite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
 ON CONFLICT (company_name) DO UPDATE SET 
   tax_id = EXCLUDED.tax_id,
   address = EXCLUDED.address;
@@ -377,8 +377,8 @@ ON CONFLICT (company_name) DO UPDATE SET
 
 ### Before Sign-Off Verification
 - [ ] Verify all 3 users have correct roles: `superadmin`/`admin`
-- [ ] Confirm `grids@microtronic.biz` shows role `superadmin`
-- [ ] Confirm `neon13@microtronic.biz` shows role `admin`
+- [ ] Confirm `superadmin@your-company.com` shows role `superadmin`
+- [ ] Confirm `admin@your-company.com` shows role `admin`
 - [ ] Confirm no legacy role aliases exist in database
 - [ ] Verify dashboard shows real data (not ฿0 if expenses exist)
 - [ ] Test all admin functionality with both roles
@@ -559,7 +559,7 @@ CREATE TABLE activity_log (
 ```sql
 -- Emergency data restoration (run ONLY if data wiped)
 INSERT INTO company_settings (company_name, tax_id, address) 
-VALUES ('Micro-Account Professional', '123456789012', '123 Accounting Street, Bangkok, Thailand')
+VALUES ('Micro Business Suite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
 ON CONFLICT (company_name) DO UPDATE SET 
   tax_id = EXCLUDED.tax_id,
   address = EXCLUDED.address;
@@ -571,8 +571,8 @@ ON CONFLICT (company_name) DO UPDATE SET
 
 ### Before Sign-Off Verification
 - [ ] Verify all 3 users have correct roles: `superadmin`/`admin`
-- [ ] Confirm `grids@microtronic.biz` shows role `superadmin`
-- [ ] Confirm `neon13@microtronic.biz` shows role `admin`
+- [ ] Confirm `superadmin@your-company.com` shows role `superadmin`
+- [ ] Confirm `admin@your-company.com` shows role `admin`
 - [ ] Confirm no legacy role aliases exist in database
 - [ ] Verify dashboard shows real data (not ฿0 if expenses exist)
 - [ ] Test all admin functionality with both roles
@@ -631,12 +631,12 @@ ON CONFLICT (company_name) DO UPDATE SET
 - **Model:** Intermediary (Agent) business model.
 - **WHT Policy:** Fixed at **3%** for software license services (Renews/Provisioning).
 - **Accounts:** Standardized 5110 (Cost) and 4110 (Revenue) for renewal operations.
-- **Key Partners:** Noventiq (Supplier - Teechada P.) and MICROTRONIC (B2B Customer).
+- **Key Partners:** Software/cloud suppliers and B2B customers (configure per deployment).
 
 **Files Modified:**
 - `components/GlobalAiChat.tsx` - Full UI/UX Overhaul.
 - `app/api/ai/accounting/route.ts` - Brain Upgrade (Context Injection).
-- `docs/BUSINESS_CONTEXT.md` - New persistent knowledge base.
+- `docs/COMPLETE_MANUAL.md` - New persistent knowledge base.
 - `components/Sidebar.tsx` - Restored Contacts menu.
 
 ---

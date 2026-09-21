@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { formatDateDisplay } from "@/lib/dateFormatter";
 import { getPNDReportDraft, getPP30Draft, getPP36Draft, getTaxSummary } from "@/app/actions";
 import { TAX_FILING_URLS } from "@/lib/taxAutomator";
+import { getCompanySettings } from "@/lib/settings";
 import TaxExportButton from "./TaxExportButton";
 
 export const dynamic = "force-dynamic";
@@ -35,12 +36,13 @@ export default async function TaxReportsPage() {
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
-  const [summaryRes, pp30Res, pnd3Res, pnd53Res, pp36Res] = await Promise.all([
+  const [summaryRes, pp30Res, pnd3Res, pnd53Res, pp36Res, companyRes] = await Promise.all([
     getTaxSummary(),
     getPP30Draft(currentMonth, currentYear),
     getPNDReportDraft("pnd3", currentMonth, currentYear),
     getPNDReportDraft("pnd53", currentMonth, currentYear),
     getPP36Draft(currentMonth, currentYear),
+    getCompanySettings(),
   ]);
 
   const { vatSales = 0, vatPurchase = 0, wht = 0, netVat = 0 } = summaryRes.success && summaryRes.data ? summaryRes.data : {};
@@ -48,6 +50,7 @@ export default async function TaxReportsPage() {
   const pnd3Draft = pnd3Res.success ? pnd3Res.data : null;
   const pnd53Draft = pnd53Res.success ? pnd53Res.data : null;
   const pp36Draft = pp36Res.success ? pp36Res.data : null;
+  const company = companyRes.success ? companyRes.data : null;
 
   return (
     <main className="min-h-screen bg-[#f8fafc] p-6 md:p-8">
@@ -61,8 +64,8 @@ export default async function TaxReportsPage() {
             </div>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-sm font-bold text-gray-700">MICROTRONIC (THAILAND) CO., LTD.</span>
-            <span className="font-mono text-xs tracking-widest text-gray-500">TAX ID: 0105561182888</span>
+            <span className="text-sm font-bold text-gray-700">{company?.company_name || "YOUR COMPANY CO., LTD."}</span>
+            <span className="font-mono text-xs tracking-widest text-gray-500">TAX ID: {company?.tax_id || "0000000000000"}</span>
           </div>
         </div>
 
@@ -288,7 +291,7 @@ export default async function TaxReportsPage() {
         </div>
 
         <div className="mt-12 border-t border-gray-200 pb-8 pt-8 text-center text-xs font-medium text-gray-400">
-          <p className="mb-1 font-bold">© 2026 MICROTRONIC (THAILAND) CO., LTD.</p>
+          <p className="mb-1 font-bold">© {new Date().getFullYear()} {company?.company_name || "YOUR COMPANY CO., LTD."}</p>
           <p className="italic opacity-80">Tax Modules (PP.30, PP.36, PND 3, PND 53) ready for daily operation.</p>
         </div>
       </div>

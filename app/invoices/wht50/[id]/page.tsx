@@ -69,7 +69,7 @@ export default async function Wht50Page({ params }: { params: Promise<{ id: stri
 
               <div className="border-t pt-6">
                 <span className="font-bold">ผู้ถูกหักภาษี ณ ที่จ่าย:</span>
-                <p className="mt-1">{company.name || "MICROTRONIC (THAILAND) CO., LTD."}</p>
+                <p className="mt-1">{company.name || "YOUR COMPANY CO., LTD."}</p>
                 <p>{company.address || "-"}</p>
                 <p>เลขประจำตัวผู้เสียภาษี: {company.tax_id || "-"}</p>
               </div>

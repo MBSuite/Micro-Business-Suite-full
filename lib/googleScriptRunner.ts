@@ -7,7 +7,6 @@ const execFileAsync = promisify(execFile);
 const SCRIPTS = {
   "auto-backup": "auto-backup.mjs",
   "dashboard-sheet": "dashboard-sheet.mjs",
-  "calendar-reminders": "calendar-reminders.mjs",
 } as const;
 
 export type GoogleScriptName = keyof typeof SCRIPTS;

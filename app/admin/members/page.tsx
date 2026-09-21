@@ -79,7 +79,7 @@ export default function MembersPage() {
       console.error("Error fetching users:", error);
       setError(error instanceof Error ? error.message : "Failed to fetch users");
       setUsers([
-        { id: 1, name: "Administrator", email: "admin@microtronic.biz", role: "superadmin", status: "Active" },
+        { id: 1, name: "Administrator", email: "admin@your-company.com", role: "superadmin", status: "Active" },
         { id: 2, name: "Urasaya Pruksanusak", email: "urasayap@gmail.com", role: "admin", status: "Active" },
         { id: 3, name: "New Member", email: "pending@example.com", role: "user", status: "Pending" },
       ]);
@@ -265,7 +265,7 @@ export default function MembersPage() {
         </div>
 
         <div className="mt-8 text-center text-gray-400 text-xs font-medium">
-           © 2026 Microtronic Thailand. Control Panel v1.0
+           © 2026 Control Panel v1.0
         </div>
       </div>
 

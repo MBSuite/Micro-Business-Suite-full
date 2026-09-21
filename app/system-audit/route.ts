@@ -1,5 +1,5 @@
 // =====================================================
-// Micro-Account: System Audit Route
+// Micro Business Suite: System Audit Route
 // Hidden route for testing journal entry validation
 // =====================================================
 

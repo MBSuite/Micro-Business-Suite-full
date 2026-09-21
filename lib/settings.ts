@@ -1,7 +1,7 @@
 // =====================================================
-// Micro-Account: Company Settings & Branding
+// Micro Business Suite: Company Settings & Branding
 // Centralized company configuration management
-// Copyright (c) 2026 Micro-Account. All Rights Reserved.
+// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
 // =====================================================
 
 import { query } from '@/lib/db';
