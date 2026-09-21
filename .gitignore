@@ -1,0 +1,62 @@
+# Database Backups (may contain credentials)
+# CLEANUP NOTE: The following files were previously committed and have been removed:
+# - db_cluster-06-01-2026@16-13-56.backup.gz (database backup with PII/financial data)
+# - kvswppixjaswjmbevrha.storage.zip (unknown storage data)
+# - bug-report.zip (bug report with potentially sensitive context)
+#
+# These remain in git history and should be purged using git filter-repo if needed.
+# For now, prevent future commits of such files:
+backup_*.sql
+*.sql.bak
+*.backup*
+*.backup.gz
+*.gz
+db_cluster*.backup.gz
+kvswppixjaswjmbevrha.storage.zip
+bug-report.zip
+
+# Sensitive Keys and Secrets
+# NOTE: secret.txt was exposed in historical commits and has been removed.
+# Treat this repository as if the following credential classes were exposed:
+# - Base64-encoded API keys/tokens
+# - Database connection strings
+# - Service account credentials
+# 
+# IMPORTANT: If any credentials were truly live when committed, 
+# they must be ROTATED IMMEDIATELY at their respective services.
+microtronic-finance-bot-*.json
+service_account.json
+client_secret_*.json
+.env
+.env.local
+.env*.local
+secret.txt
+*.key
+*.pem
+*.db
+*.sqlite3
+**/microtronic-finance-bot-*.json
+**/service_account.json
+**/client_secret_*.json
+**/.env
+**/.env.local
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+.vercel
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.agent/
+.windsurf/
+# site/
+tmp/
+
+# KTC bank statements (private financial info - keep LOCAL only, commit only README summary)
+docs/statements/*.pdf
+*.tsbuildinfo

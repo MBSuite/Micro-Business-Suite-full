@@ -1,0 +1,52 @@
+{
+  "name": "micro-business-suite",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/**/*.test.mjs",
+    "lint": "eslint",
+    "tax:update": "tsx jobs/scheduleTaxUpdate.ts",
+    "ai:audit": "tsx jobs/scheduleAiAudit.ts",
+    "check:knowledge": "node scripts/verify-knowledge-sync.mjs",
+    "check:consistency": "node scripts/weekly-consistency-audit.mjs"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.13.4",
+    "@vercel/postgres": "^0.10.0",
+    "axios": "^1.15.0",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.3.1",
+    "exceljs": "^3.4.0",
+    "framer-motion": "^12.36.0",
+    "googleapis": "^171.4.0",
+    "jose": "^6.2.3",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^0.577.0",
+    "next": "^16.2.1",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.20.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.4",
+    "react-barcode": "^1.6.1",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/node": "^20",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.1",
+    "tailwindcss": "^4.2.2",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
+  }
+}
