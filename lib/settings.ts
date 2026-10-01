@@ -48,9 +48,24 @@ export async function ensureCompanySettingsTable() {
     )
   `);
 
-  // Insert default settings if table is empty
+  // Migrate older schemas that used `name` instead of `company_name`.
+  await query(`ALTER TABLE company_settings ADD COLUMN IF NOT EXISTS company_name VARCHAR(255)`);
+  await query(`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'company_settings' AND column_name = 'name'
+      ) THEN
+        ALTER TABLE company_settings ALTER COLUMN name DROP NOT NULL;
+      END IF;
+    END $$;
+  `);
+
+  // Insert default settings if table is empty.
+  // COUNT(*) returns a string in node-postgres, so compare numerically.
   const existing = await query('SELECT COUNT(*) as count FROM company_settings');
-  if (existing.rows[0].count === 0) {
+  if (Number(existing.rows[0].count) === 0) {
     await query(`
       INSERT INTO company_settings (company_name, tax_id, address)
       VALUES ('MBSuite', '', 'Company Address, Thailand')
