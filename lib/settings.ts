@@ -19,6 +19,18 @@ export interface CompanySettings {
   updated_at?: string;
 }
 
+// Column allowlist. Any key not in this list is ignored — never interpolate
+// arbitrary request keys into SQL.
+export const WRITABLE_SETTINGS_COLUMNS: Array<keyof CompanySettings> = [
+  'company_name',
+  'tax_id',
+  'address',
+  'logo_url',
+  'phone',
+  'email',
+  'website',
+];
+
 // Initialize company settings table
 export async function ensureCompanySettingsTable() {
   await query(`
@@ -69,20 +81,22 @@ export async function updateCompanySettings(settings: Partial<CompanySettings>):
   try {
     await ensureCompanySettingsTable();
     
-    const fields = Object.keys(settings).filter(key => key !== 'id');
-    const values = Object.values(settings);
-    
+    const fields = WRITABLE_SETTINGS_COLUMNS.filter(
+      (key) => key in settings && settings[key] !== undefined
+    );
+    const values = fields.map((field) => settings[field]);
+
     if (fields.length === 0) {
       return { success: true };
     }
 
     const setClause = fields.map((field, index) => `${field} = $${index + 1}`).join(', ');
-    
+
     await query(`
-      UPDATE company_settings 
+      UPDATE company_settings
       SET ${setClause}, updated_at = CURRENT_TIMESTAMP
       WHERE id = (SELECT id FROM company_settings ORDER BY id DESC LIMIT 1)
-    `, [...values, new Date().toISOString()]);
+    `, values);
     
     return { success: true };
   } catch (error: any) {

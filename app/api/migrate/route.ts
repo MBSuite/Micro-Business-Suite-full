@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST() {
   try {
+    // Authorization: schema-changing migrations must be admin-only.
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return NextResponse.json({ error: gate.error }, { status: gate.status });
+    }
+
     console.log('Running migration to add recurring columns to quotations table...');
     
     // First check if table exists

@@ -1,4 +1,5 @@
 import { query } from "./db";
+import { canAccessAdmin } from "./core-standards";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 
@@ -163,6 +164,48 @@ export async function auth(): Promise<{ user: UserSession } | null> {
   const session = await verifyToken(token);
   if (!session) return null;
   return { user: session };
+}
+
+// Authorization gate for privileged routes.
+// Reads the user's CURRENT role/status from the database instead of trusting the
+// role embedded in the JWT, so revoked/demoted accounts lose access immediately.
+export type AdminGate =
+  | { ok: true; user: UserSession }
+  | { ok: false; status: number; error: string };
+
+export async function requireAdmin(): Promise<AdminGate> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { ok: false, status: 401, error: "Unauthorized — not authenticated" };
+  }
+
+  const { rows } = await query(
+    `SELECT id, email, name, role, status FROM users WHERE id = $1 LIMIT 1`,
+    [session.user.id]
+  );
+  const row = rows[0];
+
+  if (!row) {
+    return { ok: false, status: 401, error: "Unauthorized — account not found" };
+  }
+
+  if (String(row.status || "").toLowerCase() === "inactive") {
+    return { ok: false, status: 403, error: "Forbidden — account is inactive" };
+  }
+
+  if (!canAccessAdmin(row.role)) {
+    return { ok: false, status: 403, error: "Forbidden — admin access required" };
+  }
+
+  return {
+    ok: true,
+    user: {
+      id: String(row.id),
+      email: String(row.email),
+      name: row.name ?? undefined,
+      role: String(row.role),
+    },
+  };
 }
 
 // Create JWT token
