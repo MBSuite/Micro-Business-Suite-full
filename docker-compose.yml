@@ -1,7 +1,7 @@
 # ============================================================
 # Micro Business Suite — Docker Compose (production delivery)
 #   app   : Next.js standalone (build from Dockerfile)
-#   postgres: PostgreSQL 16 (init schema จาก scripts/backup.sql)
+#   db    : ใช้ stack-db ของ sv (Phase 0.5) — ไม่มี container DB ของตัวเองแล้ว
 #
 # วิธีใช้:
 #   cp .env.example .env.local
@@ -11,42 +11,19 @@
 # ============================================================
 
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: mbs-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: mbs
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mbs}
-      POSTGRES_DB: mbs
-    volumes:
-      - mbs-db-data:/var/lib/postgresql/data
-      - ./scripts/backup.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./scripts/init-chart-of-accounts.sql:/docker-entrypoint-initdb.d/02-chart-of-accounts.sql:ro
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mbs -d mbs"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: mbs-app
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      # DB — ต่อในเครือข่าย compose (sslmode=disable สำหรับ local postgres)
-      POSTGRES_URL: postgresql://mbs:${POSTGRES_PASSWORD:-mbs}@db:5432/mbs?sslmode=disable
-      DATABASE_URL: postgresql://mbs:${POSTGRES_PASSWORD:-mbs}@db:5432/mbs?sslmode=disable
+      # DB — stack-db บนเครือข่าย stack_stack (sslmode=disable)
+      POSTGRES_URL: ${BILLING_DATABASE_URL}
+      DATABASE_URL: ${BILLING_DATABASE_URL}
       # Auth
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
@@ -68,10 +45,17 @@ services:
       GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD:-}
       CRON_ENABLED: ${CRON_ENABLED:-false}
       RECURRING_SECRET: ${RECURRING_SECRET:-}
+    # เข้าผ่าน HTTPS ผ่าน Tailscale Serve เท่านั้น
+    # https://sv.tail7b4d4a.ts.net:8443 -> proxy -> 127.0.0.1:3001
+    # ผูกแค่ loopback = เข้าตรงผ่าน LAN/Tailscale IP ไม่ได้
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3001:3000"
+    networks:
+      - stack
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-volumes:
-  mbs-db-data:
+networks:
+  stack:
+    external: true
+    name: stack_stack
