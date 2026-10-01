@@ -1,5 +1,5 @@
 # ============================================================
-# Micro Business Suite — Docker Compose (production delivery)
+# MBSuite — Docker Compose (production delivery)
 #   app   : Next.js standalone (build from Dockerfile)
 #   db    : ใช้ stack-db ของ sv (Phase 0.5) — ไม่มี container DB ของตัวเองแล้ว
 #

@@ -1,7 +1,7 @@
 // =====================================================
-// Micro Business Suite: Company Settings API
+// MBSuite: Company Settings API
 // RESTful API for company branding and configuration
-// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+// Copyright (c) 2026 MBSuite. All Rights Reserved.
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server';

@@ -34,7 +34,7 @@ export default async function SettingsPage() {
         <SettingsClient initialData={company} />
 
         <div className="text-center text-gray-400 text-xs font-medium pb-8 border-t border-gray-200 pt-6 mt-12">
-           © 2026 Micro Business Suite.
+           © 2026 MBSuite.
         </div>
       </div>
     </main>

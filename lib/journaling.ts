@@ -1,5 +1,5 @@
 // =====================================================
-// Micro Business Suite: Automated Journaling System
+// MBSuite: Automated Journaling System
 // Double-Entry Bookkeeping with Thai Accounting Standards
 // =====================================================
 

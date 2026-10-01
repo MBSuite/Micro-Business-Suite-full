@@ -270,7 +270,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
         </div>
 
         <div className="pb-20 text-center text-[10px] font-black uppercase tracking-[0.6em] text-slate-400 opacity-30 print:hidden">
-          Micro Business Suite Billing Day Ready
+          MBSuite Billing Day Ready
         </div>
       </div>
 

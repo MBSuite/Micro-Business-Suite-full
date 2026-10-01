@@ -1,7 +1,7 @@
 // =====================================================
-// Micro Business Suite: CSV Import API
+// MBSuite: CSV Import API
 // Bulk import expenses from CSV files
-// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+// Copyright (c) 2026 MBSuite. All Rights Reserved.
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server';

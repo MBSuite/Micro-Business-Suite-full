@@ -1,5 +1,5 @@
 -- =======================================================
--- MICRO BUSINESS SUITE LATEST SCHEMA MASTER (APRIL 2026)
+-- MBSUITE LATEST SCHEMA MASTER (APRIL 2026)
 -- Target Platform: Neon Database (PostgreSQL)
 -- Architecture Era: Era 2 (Modern Entity Linking)
 -- =======================================================

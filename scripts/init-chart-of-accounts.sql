@@ -1,4 +1,4 @@
--- Standard Chart of Accounts for Micro Business Suite (Thailand)
+-- Standard Chart of Accounts for MBSuite (Thailand)
 -- Era 2: Standardized Coding
 
 INSERT INTO chart_of_accounts (id, account_code, account_name_th, account_name_en, account_type) VALUES

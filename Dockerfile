@@ -1,5 +1,5 @@
 # ============================================================
-# Micro Business Suite — Production Dockerfile (Next.js standalone)
+# MBSuite — Production Dockerfile (Next.js standalone)
 # Build with output: 'standalone' (see next.config.ts)
 # ============================================================
 

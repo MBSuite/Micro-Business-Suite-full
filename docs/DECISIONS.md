@@ -1,4 +1,4 @@
-# Architecture Decisions Log (Micro Business Suite)
+# Architecture Decisions Log (MBSuite)
 
 บันทึก decision ระดับเทคนิค/สินค้าที่มีผลต่อโครงสร้างโค้ด — ใช้ประกอบการดูแลโปรแกรมของลูกค้า
 

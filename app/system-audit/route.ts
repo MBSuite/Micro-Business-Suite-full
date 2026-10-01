@@ -1,5 +1,5 @@
 // =====================================================
-// Micro Business Suite: System Audit Route
+// MBSuite: System Audit Route
 // Hidden route for testing journal entry validation
 // =====================================================
 

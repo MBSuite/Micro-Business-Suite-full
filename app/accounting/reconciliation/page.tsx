@@ -296,7 +296,7 @@ export default function ReconciliationPage() {
         {/* Footer */}
         <div className="py-8 text-center opacity-30">
           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">
-            Accounting Reconciliation - Micro Business Suite 2026
+            Accounting Reconciliation - MBSuite 2026
           </p>
         </div>
       </div>

@@ -8,7 +8,7 @@ import { Providers } from "@/components/Providers";
 import GlobalAiChat from "@/components/GlobalAiChat";
 
 export const metadata: Metadata = {
-  title: "Micro Business Suite | ระบบจัดการบัญชีอัจฉริยะ",
+  title: "MBSuite | ระบบจัดการบัญชีอัจฉริยะ",
   description: "ระบบจัดการบัญชีและภาษีออนไลน์ 100% สไตล์ Enterprise Premium",
 };
 

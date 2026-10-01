@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
       });
     } else {
       // Create a simple pseudo-SQL file (INSERT INTO statements)
-      let sqlContent = `-- Micro Business Suite Database Backup\n-- Date: ${new Date().toISOString()}\n-- Exported by: ${session.user.email}\n\nBEGIN;\n\n`;
+      let sqlContent = `-- MBSuite Database Backup\n-- Date: ${new Date().toISOString()}\n-- Exported by: ${session.user.email}\n\nBEGIN;\n\n`;
 
       for (const table of tables) {
         if (backupData[table].length === 0) continue;

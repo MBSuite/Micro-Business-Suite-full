@@ -1,6 +1,6 @@
 # RBAC Standard (Canonical)
 
-This document defines the single access-control standard for Micro Business Suite.
+This document defines the single access-control standard for MBSuite.
 
 ## Canonical Roles
 

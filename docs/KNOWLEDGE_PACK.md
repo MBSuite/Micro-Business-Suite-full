@@ -1,4 +1,4 @@
-# Micro Business Suite Knowledge Pack
+# MBSuite Knowledge Pack
 
 This is the persistent knowledge system for the project.
 All AI and human contributors should use this pack as the primary operational memory.

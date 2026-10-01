@@ -1,4 +1,4 @@
-# Micro Business Suite Scripts & Database Reference
+# MBSuite Scripts & Database Reference
 
 ⚠️ **ATTENTION ALL AI ASSISTANTS:**
 This folder has been cleaned up to prevent confusion between legacy (Era 1) and modern (Era 2) architectures.

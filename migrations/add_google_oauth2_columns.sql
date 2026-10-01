@@ -38,7 +38,7 @@ BEGIN
         -- Create table if not exists
         CREATE TABLE IF NOT EXISTS company_settings (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(255) DEFAULT 'Micro Business Suite',
+            name VARCHAR(255) DEFAULT 'MBSuite',
             tax_id VARCHAR(50) DEFAULT '',
             phone VARCHAR(50),
             email VARCHAR(255),
@@ -75,7 +75,7 @@ BEGIN
         
         -- Insert default row if table is empty
         INSERT INTO company_settings (name, tax_id, address)
-        SELECT 'Micro Business Suite', '', 'Company Address, Thailand'
+        SELECT 'MBSuite', '', 'Company Address, Thailand'
         WHERE NOT EXISTS (SELECT 1 FROM company_settings);
         
         RAISE NOTICE '✅ Table company_settings created with all columns';

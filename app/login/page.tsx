@@ -131,7 +131,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 text-center text-gray-400 text-xs font-medium">
-           Copyright © 2026 Micro Business Suite.
+           Copyright © 2026 MBSuite.
         </div>
       </div>
     </main>
