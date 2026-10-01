@@ -5,7 +5,7 @@ export type CoreRole = (typeof CORE_ROLES)[number];
 export function normalizeRole(role?: string | null): CoreRole {
   const value = String(role || "").trim().toLowerCase();
   if (value === "superadmin") return "superadmin";
-  if (value === "admin") return "admin";
+  if (value === "admin" || value === "administrator") return "admin";
   return "user";
 }
 
