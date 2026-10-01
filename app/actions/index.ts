@@ -37,3 +37,6 @@ export {
 export {
   getAllAiAlerts, getAiAlertCount, triggerAiAudit, resolveAiAlert, dismissAiAlert,
 } from "./ai-audit";
+export {
+  getHostingPlans, createHostingPlan, getHostingSubscriptions, createHostingSubscription,
+} from "./hosting";

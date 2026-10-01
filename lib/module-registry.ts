@@ -18,6 +18,7 @@ export const MODULE_REGISTRY: AppModule[] = [
   // ==================== SALES ====================
   { id: "quotations", label: "ใบเสนอราคา (QT)", icon: "fileText", category: "sales", route: "/quotations", enabledByDefault: true },
   { id: "invoices", label: "ใบแจ้งหนี้ (INV)", icon: "receipt", category: "sales", route: "/invoices", enabledByDefault: true },
+  { id: "hosting_subscriptions", label: "สัญญาเช่าโฮสติ้ง", icon: "globe", category: "sales", route: "/hosting/subscriptions", enabledByDefault: true },
   { id: "recurring", label: "รอบบิลอัตโนมัติ", icon: "repeat", category: "sales", route: "/recurring", enabledByDefault: true },
   { id: "receipts", label: "ใบเสร็จรับเงิน", icon: "creditCard", category: "sales", route: "/receipts", enabledByDefault: true },
 
@@ -30,6 +31,7 @@ export const MODULE_REGISTRY: AppModule[] = [
   // ==================== MASTER DATA ====================
   { id: "inventory", label: "คลังสินค้า (Stock)", icon: "package", category: "master_data", route: "/inventory", enabledByDefault: true },
   { id: "services", label: "ราคากลางบริการ (Services)", icon: "briefcase", category: "master_data", route: "/services", enabledByDefault: true },
+  { id: "hosting_plans", label: "แพ็กเกจโฮสติ้ง", icon: "server", category: "master_data", route: "/hosting/plans", enabledByDefault: true },
   { id: "coa", label: "ผังบัญชี (COA)", icon: "pieChart", category: "master_data", route: "/admin/coa", enabledByDefault: true },
   { id: "contacts", label: "ผู้ติดต่อ / คู่ค้า (Contacts)", icon: "users", category: "master_data", route: "/contacts", enabledByDefault: true },
 
