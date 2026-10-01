@@ -83,6 +83,9 @@ web_modules/
 license_key.txt
 .opencode/
 
+# build artifacts
+next-env.d.ts
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
