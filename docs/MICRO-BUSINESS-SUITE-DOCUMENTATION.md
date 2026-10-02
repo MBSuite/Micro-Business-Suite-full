@@ -467,7 +467,8 @@ Local dev ใช้ `DATABASE_URL` โดยตรง ส่วน Compose เ�
 | `pnpm dev` | โหมดพัฒนา (ปกติ port 3000) |
 | `pnpm build` | build production |
 | `pnpm start` | รัน production |
-| `pnpm test` | รันเฉพาะ `tests/**/*.test.mjs` (4 ไฟล์); ไม่มีเทสต์ `.ts` ใน `tests/` แล้ว |
+| `pnpm test` | รัน `tests/**/*.test.mjs` (4 ไฟล์) + `tests/**/*.test.mts` (1 ไฟล์) ผ่าน `tsx` — รวม 36 เทสต์ |
+| `pnpm test:watch` | เหมือน `pnpm test` แต่ watch ระหว่างแก้ |
 | `pnpm lint` | ESLint ทั้ง repository |
 | `pnpm tax:update` | รัน tax update job; ไม่ใช่การยื่นแบบ |
 | `pnpm ai:audit` | รัน AI Auditor |
@@ -614,7 +615,7 @@ components/                   ← 13 React components ที่ใช้ซ้�
 scripts/                      ← auto-backup, dashboard-sheet, issue-license, *.sql
 jobs/                         ← scheduleTaxUpdate, scheduleAiAudit, scheduleMaintenance
 migrations/                   ← 7 ไฟล์ SQL migration
-tests/                        ← 4 ไฟล์ `.test.mjs` (เคยมี `.test.ts` ที่ไม่เคยรัน — ลบแล้ว ดู 7.5.1)
+tests/                        ← 4 ไฟล์ `.test.mjs` + `taxAutomator.test.mts` (เคยมี `.test.ts` ที่ไม่เคยรัน — ลบแล้ว เขียนใหม่เป็น `.mts` ดู 7.6.1–7.6.2)
 ```
 
 ### 6.5 จุดสำคัญที่ต้องรู้เรื่อง DB
@@ -721,6 +722,8 @@ pnpm test              → 14/14 ผ่าน
 pnpm exec tsc --noEmit → สะอาด 0 errors   (เดิม 17 errors ใน tests/taxAutomator.test.ts — ลบแล้ว ดู 7.6.1)
 pnpm check:consistency → ผ่าน
 ```
+> ตัวเลขเหล่านี้เป็นสถานะ ณ ตอนปิดงานเอกสารเท่านั้น ปัจจุบันเทสต์เป็น **36/36** เพราะเพิ่ม
+> `tests/taxAutomator.test.mts` แล้ว — ดู **7.6.2**
 
 ### 7.4 v0.1.2 — เอกสารรวม (2 ต.ค. 2026)
 
@@ -756,8 +759,10 @@ README และ env instructions ได้รับการแก้ให้�
 
 - ไม่พบ `.github/workflows/` ใน repository ณ วันที่ตรวจ; ไม่ได้ยืนยัน CI จาก provider อื่น
 - `pnpm exec tsc --noEmit` ณ 2026-10-02: **สะอาด 0 errors** (เดิม 17 errors — ลบ `tests/taxAutomator.test.ts` ตามดู 7.6.1)
-- `pnpm test`: **14 passed** จาก `tests/**/*.test.mjs` 4 ไฟล์
+- `pnpm test` ณ 2026-10-02: **36 passed** — `tests/**/*.test.mjs` 4 ไฟล์ + `tests/taxAutomator.test.mts` (เพิ่มใหม่ ดู 7.6.2)
+  สคริปต์เปลี่ยนเป็น `node --import tsx --test tests/**/*.test.mjs tests/**/*.test.mts`
 - `pnpm lint` ณ 2026-10-02: **363 errors, 169 warnings** — ยังไม่ได้แก้ ต้องตัดสินใจว่าจะลด scope หรือทยอยแก้
+  (ไฟล์เทสต์ใหม่ lint สะอาด 0 warnings ตัวเลขรวมไม่เปลี่ยน)
 
 #### 7.5.6 Lazy migration ขัดกับนโยบายตัวเอง
 
@@ -803,11 +808,57 @@ pnpm exec tsc --noEmit → สะอาด 0 errors
 pnpm lint              → 532 problems (363 errors, 169 warnings) — ไม่เปลี่ยน
 ```
 
-> **สิ่งที่ยังไม่ได้ทำ:** `lib/taxAutomator.ts` เองยังไม่มีเทสต์ครอบคลุม 4 class ที่ export
-> (`InputTaxValidator`, `WithholdingTaxEngine`, `OverseasServiceTrigger`, `TaxCalendarAlerts`)
-> และไม่มีการเรียก `InputTaxValidator` จาก expense flow (ดูข้อ 2) — ถ้าจะเพิ่มความคุ้มครอง
-> ต้องเขียนใหม่โดย mock `getCompanySettings()` เพราะขึ้นกับ DB
-> **นี่คือช่องโหว่ coverage ที่ต้องรู้** ไม่ใช่ผลที่ดีขึ้นโดยรวม
+> **ผลหลังลบ:** โค้ดที่หายไปเป็นเทสต์ที่พังตั้งแต่แรก (ดูรายละเอียดด้านบน)
+> ต่อมาพี่ฆังสั่งให้เขียนเทสต์ภาษีขึ้นใหม่ทั้งชุด และทำเสร็จแล้ว — ดู **7.6.2**
+
+#### 7.6.2 ✅ เขียน `tests/taxAutomator.test.mts` ครอบคลุม 4 class (พี่ฆังสั่ง 2 ต.ค. 2026)
+
+**ผลรันจริง:**
+```
+pnpm test               → 36/36 ผ่าน (เดิม 14)
+pnpm exec tsc --noEmit  → สะอาด 0 errors
+pnpm check:consistency  → ผ่าน
+pnpm lint               → 532 problems (เท่าเดิม ไฟล์ใหม่สะอาด 0 warnings)
+```
+
+**ทำไมเป็น `.mts` ไม่ใช่ `.ts`:** `package.json` ไม่มี `"type": "module"` → tsx/esbuild
+ตีความ `.ts` เป็น CommonJS และตายด้วย `Top-level await is currently not supported with the "cjs" output format`
+ต้องการ `.mts` เพื่อบังคับ ESM
+
+**ทำไมต้อง dynamic import:** `lib/taxAutomator.ts` → `lib/settings.ts` → `lib/db.ts`
+และ `lib/db.ts` **throw ตอน module load** ถ้าไม่มี `POSTGRES_URL`
+(`FATAL: Database connection URL is not configured`) จึงต้อง set env ให้เสร็จก่อน import จึงเขียนเป็น `await import(...)`
+
+**ทำไมต้องทับ env ไม่ใช่ใช้ค่าเดิม:** `getCompanySettings()` เรียก `ensureCompanySettingsTable()`
+ซึ่งรัน DDL — ถ้า test สืบทอด `POSTGRES_URL` จริงจากผู้พัฒนา เทสต์หน่วยจะเขียนลงฐานข้อมูลจริง
+จึงกำหนด `process.env.POSTGRES_URL` เป็น loopback ที่ปิด (`127.0.0.1:1`) แบบไม่มีเงื่อนไข
+connection ล้มเหลวทันที `getCompanySettings()` กลืน error เองคืน `{ success: false }` → `company.data` เป็น `undefined`
+**ไม่มีการต่อฐานข้อมูลจริงในการรันเทสต์**
+
+**สิ่งที่ครอบคลุม (22 เทสต์):**
+| class | ครอบคลุม |
+|---|---|
+| `WithholdingTaxEngine` | เกณฑ์ 1,000 บาท · continuous contract · อัตรา Rent/Advertisement/Transport · เลือก ภ.ง.ด. 53/3 · service ที่ไม่อยู่ใน map |
+| `OverseasServiceTrigger` | ต่างประเทศ+บริการ → ภ.พ. 36 · ในประเทศ · ต่างประเทศแต่ไม่ใช่บริการ |
+| `TaxCalendarAlerts` | วันที่ 1/5/10 แบบกระดาษ · e-Filing 15–20 พร้อมลิงก์ ภ.พ. 30 · วันธรรมดาเงียบ · 1 ส.ค. มี ภ.ง.ด. 51 · RD homepage |
+| `InputTaxValidator` | invoice ครบ/ไม่ครบ · VAT ตรง 7% · VAT ผิด · หมวดต้องห้าม 2 แบบ · ไม่มี VAT · เงื่อนไข float |
+
+**เจอบั๊กจริงระหว่างเขียน — VAT tolerance 1 สตางค์ไม่ทำงาน:**
+`lib/taxAutomator.ts:64` คอมเมนต์ว่า *"Allow slight floating point discrepancy (1 satang)"*
+แต่เงื่อนไขคือ `Math.abs(expectedVat - actualVat) > 0.01` และ float ทำให้ช่องว่าง 1 สตางค์ออกมาเป็น
+`0.010000000000005116` ซึ่ง **มากกว่า 0.01 จริง** → ต่าง 1 สตางค์ถูกปฏิเสธ ไม่ใช่ถูกยอมรับ
+ยืนยันด้วยการรันจริง: `netAmount: 1000, vatAmount: 70.01` → ขึ้น error `ยอด VAT ไม่ถูกต้อง`
+
+เทสต์ที่เขียนไว้ **pin พฤติกรรมจริง** (ปฏิเสธ) พร้อมคอมเมนต์อธิบาย ไม่ได้แก้ `lib/taxAutomator.ts`
+เพราะพี่ฆังสั่งไม่แตะ logic ภาษี — **การเปลี่ยน threshold เป็นการตัดสินใจทางภาษี ต้องให้ผู้ทำบัญชี/ผู้พัฒนาตัดสิน**
+
+**ยังไม่ครอบคลุม 1 branch เดียว:** การเทียบ `taxId`/`address` กับ `company_settings`
+เพราะต้องมีฐานข้อมูลจริง — เทสต์จึงไม่ส่ง `taxId`/`address` เลย ทำให้ทุก assertion
+ข้างบนไม่ขึ้นกับว่าฐานข้อมูลต่อได้หรือไม่
+
+> **ยังค้างอยู่:** ไม่มีการเรียก `InputTaxValidator` จาก expense UI/action (ดูข้อ 2)
+> คือโค้ดภาษีที่ทดสอบแล้ว **ยังไม่ถูกเรียกใน workflow จริง** — coverage ไม่ได้แปลว่ามีผลใช้งาน
+
 
 ---
 

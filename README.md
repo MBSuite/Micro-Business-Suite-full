@@ -63,7 +63,9 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Scripts ที่ใช้ได้: `pnpm test` (รันเฉพาะ `tests/**/*.test.mjs` ซึ่งมี 4 ไฟล์), `pnpm lint`, `pnpm tax:update`, `pnpm ai:audit`, `pnpm check:knowledge`, `pnpm check:consistency`. ไม่มีเทสต์ภาษีใน `tests/` — `lib/taxAutomator.ts` ยังไม่มี test coverage.
+Scripts ที่ใช้ได้: `pnpm test` (รัน `tests/**/*.test.mjs` 4 ไฟล์ + `tests/taxAutomator.test.mts`), `pnpm test:watch`, `pnpm lint`, `pnpm tax:update`, `pnpm ai:audit`, `pnpm check:knowledge`, `pnpm check:consistency`
+
+`lib/taxAutomator.ts` **มี test coverage แล้ว** — `tests/taxAutomator.test.mts` ครอบคลุมทั้ง 4 class (`InputTaxValidator`, `WithholdingTaxEngine`, `OverseasServiceTrigger`, `TaxCalendarAlerts`) รวม 22 เทสต์ รวมเป็น 36/36 เทสต์ ดูวิธีรันและข้อจำกัดที่ยังเหลือใน `docs/MICRO-BUSINESS-SUITE-DOCUMENTATION.md` ข้อ 7.6.2
 
 การตั้ง cron ในเครื่อง production ต้องยืนยันจาก environment ของเครื่องนั้น; ในแอปมี scheduler เมื่อเปิด `CRON_ENABLED=true`.
 
