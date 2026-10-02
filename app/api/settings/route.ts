@@ -5,7 +5,7 @@
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompanySettings, updateCompanySettings, WRITABLE_SETTINGS_COLUMNS } from '@/lib/settings';
+import { getCompanySettings, updateCompanySettings, WRITABLE_SETTINGS_COLUMNS, redactSettingsSecrets } from '@/lib/settings';
 import { requireAdmin } from '@/lib/auth';
 
 // GET company settings
@@ -22,7 +22,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      data: result.data
+      data: redactSettingsSecrets(result.data)
     });
   } catch (error: any) {
     return NextResponse.json(

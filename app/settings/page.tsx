@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { redactSettingsSecrets } from "@/lib/settings";
 import SettingsClient from "@/components/SettingsClient";
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +7,20 @@ export const dynamic = 'force-dynamic';
 async function getCompanyData() {
   try {
     const res = await query('SELECT * FROM company_settings LIMIT 1');
-    return res.rows[0];
+    const row = res.rows[0];
+    if (!row) return null;
+
+    // SettingsClient is a client component: whatever we pass is serialized into
+    // the RSC payload sent to the browser. Never include secret values — pass
+    // only presence flags so the UI can still show the "•••• (saved)" state.
+    const redacted = redactSettingsSecrets(row) as Record<string, unknown>;
+    return {
+      ...redacted,
+      rd_client_secret_set: Boolean(row.rd_client_secret),
+      rd_api_key_set: Boolean(row.rd_api_key),
+      google_client_secret_set: Boolean(row.google_client_secret),
+      google_refresh_token_set: Boolean(row.google_refresh_token),
+    };
   } catch (e) {
     return null;
   }

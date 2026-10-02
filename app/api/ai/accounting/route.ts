@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { askGemini } from '../../../../services/aiAssistant';
+import { requireAdmin } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
 
 export async function POST(request: Request) {
+  const gate = await requireAdmin();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
   try {
     const { prompt } = await request.json();
     if (typeof prompt !== 'string' || !prompt.trim()) {

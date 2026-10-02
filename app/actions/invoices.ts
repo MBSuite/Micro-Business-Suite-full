@@ -3,11 +3,14 @@
 import { query } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSalesJournalEntry } from "@/lib/journaling";
+import { redactSettingsSecrets } from "@/lib/settings";
 
 export async function getCompanySettings() {
   try {
     const { rows } = await query(`SELECT * FROM company_settings LIMIT 1`);
-    return { success: true, data: rows[0] };
+    // This is a server action callable from client components, so its return
+    // value is serialized to the browser. Strip secret columns before returning.
+    return { success: true, data: redactSettingsSecrets(rows[0]) };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

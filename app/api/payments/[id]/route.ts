@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
@@ -41,6 +42,11 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const gate = await requireAdmin();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
   try {
     const { id } = await params;
     const body = await req.json();
@@ -70,33 +76,32 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const gate = await requireAdmin();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
+  const { id } = await params;
   try {
-    const { id } = await params;
-    
-    // ลบ payment และ journal entries ที่เกี่ยวข้อง
-    await query("BEGIN");
-    
-    // ลบ journal entries ที่ลิงก์กับ payment นี้ (ค้นหาผ่าน reference_no ที่มีเลข payment)
-    await query(
-      `DELETE FROM journal_entries WHERE reference_no LIKE $1 OR description LIKE $2`,
-      [`%RC-${id}%`, `%รับชำระ%`]
-    );
-    
-    // ลบ payment
-    const result = await query(
-      "DELETE FROM payments WHERE id = $1 RETURNING *",
-      [id]
-    );
-    
-    await query("COMMIT");
-    
+    // Delete only the journal entries bound to THIS payment. Receipt entries
+    // created by createReceiptJournalEntry use reference_type='receipt' and
+    // reference_id=<payment id>. Matching on free-text descriptions (the old
+    // "%รับชำระ%" clause) deleted unrelated ledger rows.
+    const result = await withTransaction(async (client) => {
+      await client.query(
+        `DELETE FROM journal_entries WHERE reference_type = 'receipt' AND reference_id = $1`,
+        [id]
+      );
+
+      return client.query("DELETE FROM payments WHERE id = $1 RETURNING *", [id]);
+    });
+
     if (result.rowCount === 0) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }
-    
+
     return NextResponse.json({ success: true, deleted: result.rows[0] });
   } catch (e) {
-    await query("ROLLBACK");
     console.error("DELETE payment error:", e);
     return NextResponse.json({ error: "Failed to delete payment" }, { status: 500 });
   }

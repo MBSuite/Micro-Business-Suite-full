@@ -31,6 +31,28 @@ export const WRITABLE_SETTINGS_COLUMNS: Array<keyof CompanySettings> = [
   'website',
 ];
 
+// Columns that must never be sent to API clients. Kept as a denylist (rather
+// than an allowlist SELECT) so redaction stays correct even when optional
+// migrations add more columns (bank_*, rd_*, google_*) on some deployments.
+export const SECRET_SETTINGS_COLUMNS = [
+  'google_client_secret',
+  'google_refresh_token',
+  'rd_client_secret',
+  'rd_api_key',
+] as const;
+
+// Return a copy of a company_settings row with all secret columns removed.
+export function redactSettingsSecrets<T extends object>(
+  row: T | null | undefined
+): Partial<T> | null | undefined {
+  if (!row) return row;
+  const clone = { ...row } as Record<string, unknown>;
+  for (const key of SECRET_SETTINGS_COLUMNS) {
+    delete clone[key];
+  }
+  return clone as Partial<T>;
+}
+
 // Initialize company settings table
 export async function ensureCompanySettingsTable() {
   await query(`
@@ -80,8 +102,11 @@ export async function getCompanySettings(): Promise<{ success: boolean; data?: C
     const { rows } = await query('SELECT * FROM company_settings ORDER BY id DESC LIMIT 1');
     
     return {
+      // Redact at the source: getCompanySettings() feeds both API responses and
+      // server components, and nothing legitimately reads the secret columns
+      // through it (google-server / updateCompanySettings query them directly).
       success: true,
-      data: rows[0] as CompanySettings
+      data: redactSettingsSecrets(rows[0]) as CompanySettings
     };
   } catch (error: any) {
     return {

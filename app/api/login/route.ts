@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { isActiveStatus } from "@/lib/registration-bootstrap.mjs";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
@@ -93,7 +94,11 @@ export async function POST(req: Request) {
 
     const user = res.rows[0];
 
-    if (user.status === "Inactive") {
+    // Only active accounts may sign in. Pending (awaiting admin approval) and
+    // Inactive accounts are rejected with the same generic message used for bad
+    // credentials, to avoid leaking account status. Status is matched
+    // case-insensitively via the shared helper (mirrors lower(status) in SQL).
+    if (!isActiveStatus(user.status)) {
       recordLoginFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }

@@ -1,5 +1,6 @@
 import { query } from "./db";
 import { canAccessAdmin } from "./core-standards";
+import { isActiveStatus } from "./registration-bootstrap.mjs";
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 
@@ -189,8 +190,8 @@ export async function requireAdmin(): Promise<AdminGate> {
     return { ok: false, status: 401, error: "Unauthorized — account not found" };
   }
 
-  if (String(row.status || "").toLowerCase() === "inactive") {
-    return { ok: false, status: 403, error: "Forbidden — account is inactive" };
+  if (!isActiveStatus(row.status)) {
+    return { ok: false, status: 403, error: "Forbidden — account is not active" };
   }
 
   if (!canAccessAdmin(row.role)) {
