@@ -73,10 +73,17 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white rounded shadow-md border-t-4 border-blue-600 p-8 overflow-hidden relative ring-1 ring-black/5">
-           <div className="flex items-center gap-2 mb-8 justify-center py-2 bg-blue-50 rounded border border-blue-100 italic">
-              <UserPlus size={18} className="text-blue-600" />
-              <span className="text-xs font-bold text-blue-700 uppercase tracking-widest">New User Registration</span>
-           </div>
+            <div className="flex items-center gap-2 mb-8 justify-center py-2 bg-blue-50 rounded border border-blue-100 italic">
+               <UserPlus size={18} className="text-blue-600" />
+               <span className="text-xs font-bold text-blue-700 uppercase tracking-widest">New User Registration</span>
+            </div>
+
+            <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded text-center">
+              <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
+                ผู้ใช้คนแรกที่ลงทะเบียนในระบบจะได้รับสิทธิ์ <b>Super Administrator</b> อัตโนมัติ
+                ส่วนผู้ใช้ถัดไปจะอยู่ในสถานะ <b>Pending</b> และต้องรอการอนุมัติจากผู้ดูแลระบบ
+              </p>
+            </div>
 
            {error && (
              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded flex flex-col gap-3">
