@@ -1,6 +1,6 @@
 # ปัญหา Login - สาเหตุและวิธีแก้ไข
 
-## วันที่: 2024-04-17
+## วันที่ในบันทึกเดิม: 2024-04-17
 ## สถานะ: แก้ไขแล้ว ✅
 
 ---
@@ -14,14 +14,12 @@
 
 ## 🔍 สาเหตุ (Root Cause)
 
-### 1. next-auth v5 beta ไม่เข้ากับ Next.js 16
-- `POST /api/auth/callback/credentials` ไม่ถึง server เลย
-- Error เกิดก่อนถึงฟังก์ชัน `authorize()`
-- next-auth v5 beta มี bug กับ Next.js 16 App Router
+### 1. ข้อสังเกตในบันทึกเดิม (ยังยืนยันเหตุการณ์ย้อนหลังไม่ได้)
+- บันทึกเดิมอ้างปัญหา NextAuth credentials และ Next.js 16 แต่วันที่ 2024-04-17 ขัดกับการอ้าง Next.js 16 ซึ่งเป็นเวอร์ชันภายหลัง
+- ให้ถือรายละเอียด root cause นี้เป็นประวัติที่ยังไม่ได้ตรวจสอบ ไม่ใช่ข้อสรุปที่ยืนยันจาก source ปัจจุบัน
 
-### 2. Conflict กับ proxy.ts
-- proxy.ts ใช้ NextAuth อยู่
-- ระบบ custom auth ที่สร้างใหม่ conflict กับ next-auth
+### 2. สถานะปัจจุบัน
+- source ปัจจุบันใช้ custom JWT ด้วย `jose` และ `proxy.ts`; ไม่พบ NextAuth runtime
 
 ---
 
@@ -30,7 +28,7 @@
 ### ขั้นตอนที่ 1: ลบ next-auth ทั้งหมด
 - ไม่ใช้ next-auth library อีกต่อไป
 - ไม่ใช้ `useSession`, `signIn`, `signOut` จาก `next-auth/react`
-- ไม่ใช้ `./middleware.ts` (ตามกฎที่มีอยู่แล้ว)
+- ใช้ `proxy.ts`; ไม่ใช้ `middleware.ts`
 
 ### ขั้นตอนที่ 2: สร้างระบบ Custom JWT
 

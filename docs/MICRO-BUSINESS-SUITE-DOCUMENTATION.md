@@ -1,8 +1,8 @@
 # MBSuite — เอกสารรวมระบบ (Consolidated Documentation)
 
-> **รวม 7 หัวข้อไว้ไฟล์เดียว** · สถานะ: สะท้อนโค้ดจริง ณ 2 ต.ค. 2026
-> ทุกข้อความด้านล่างอ้างอิงจากไฟล์จริงในโปรเจกต์ ไม่มีการคาดเดา
-> ภาคผนวกชี้เอกสารเดิมอยู่ท้ายไฟล์ (คัดลอกไฟล์เดิมไม่ได้ลบ)
+> **รวมเอกสารระบบและคู่มือไว้ไฟล์เดียว** · ตรวจ source ณ 2 ต.ค. 2026
+> เป็น static review ไม่ใช่การทดสอบ production หรือการรับรองข้อกฎหมายภาษี ข้อความที่ยังไม่ยืนยันจะระบุไว้ตรง ๆ
+> ภาคผนวกชี้ไปยังเอกสารต้นทาง; ไม่ได้คัดลอกหรือแทนที่ไฟล์เหล่านั้น
 
 ---
 
@@ -29,8 +29,8 @@
 
 | แนวคิด | รายละเอียด | หลักฐานในโค้ด |
 |---|---|---|
-| **Single source of truth ที่ journal** | เอกสารธุรกิจ (invoice/expense/payment) ไม่ใช่ที่เก็บตัวเลขบัญชีโดยตรง แต่เป็นตัวป้อนสร้าง journal | `lib/journaling.ts:338-520` — ทุก document มีฟังก์ชัน `createXxxJournalEntry` |
-| **Double-entry ตามมาตรฐานไทย** | ทุกรายการมีเดบิต/เครดิตที่ต้องสมดุล | `lib/journaling.ts:13-50` — COA mapping ครบ 5 หมวด |
+| **Journal เป็นหลักฐานบัญชีสำคัญ** | ระบบสร้าง journal จากเอกสารบางประเภท แต่รายงานบางส่วนยังอ่าน `invoices`/`expenses` โดยตรง จึงยังยืนยันไม่ได้ว่า journal เป็น single source of truth ทั้งระบบ | `lib/journaling.ts`, `app/actions/tax-reports.ts` |
+| **รูปแบบ double-entry** | แถว journal เก็บ debit account, credit account และ amount; ยังไม่มีหลักฐานว่าทุก workflow ตรวจความครบถ้วน/ความสมดุลข้ามหลายแถวได้ครอบคลุม | `lib/journaling.ts` และ server actions ที่เรียกใช้ |
 | **ทะเบียนภาษีแยกจากบัญชี** | VAT/WHT เก็บเป็นบัญชีเฉพาะ (2121, 1140, 2130) ไม่ปนกับรายได้/ค่าใช้จ่าย | `lib/journaling.ts:22-28` |
 | **RBAC แบบกลุ่ม** | สิทธิ์มาจาก `groups` → `group_permissions` → `user_groups` ไม่ใช่การผูกตรงกับ role | `lib/permissions.ts:40-138` |
 | **Google-First** | ส่งออก/สำรองข้อมูลผ่าน Google Drive + Sheets แทนการสร้างระบบ cloud เอง | `scripts/auto-backup.mjs`, `scripts/dashboard-sheet.mjs` |
@@ -45,21 +45,18 @@
 - ต้นทุนจ้างนักบัญชีเดือนละ 10,000–30,000 บาท สำหรับรายได้ไม่กี่แสน
 - MBSuite แทนที่ด้วย auto-journaling: ออกใบแจ้งหนี้ → ระบบลงเดบิต/เครดิตให้เอง (`lib/journaling.ts:338-387`)
 
-**ปัญหา 2: ภาษีเป็นภาระที่ทำผิดและแก้ยาก**
-- กรมสรรพากรกำหนดเกณฑ์ซับซ้อน: VAT 7%, WHT 3/2/1/5%, ภ.พ.36, ห้ามภาษีซื้อบางประเภท
-- ระบบมี validation engine ตรวจให้อัตโนมัติ (`lib/taxAutomator.ts`)
-  - `InputTaxValidator` (class `lib/taxAutomator.ts:26`) — ตรวจภาษีซื้อ: เทียบเลขประจำตัวผู้เสียภาษี/ที่อยู่กับ `company_settings` (เรียก `getCompanySettings()` ที่ `:37`), ตรวจห้ามหัก (รถยนต์/ค่ารับรอง), ตรวจ VAT = Net × 7% และ**ทำเป็นต้นทุน**ถ้าห้ามหัก
-  - `WithholdingTaxEngine` (class `lib/taxAutomator.ts:84`) — คำนวณ WHT ตามประเภทบริการ: Rent 5%, Service 3%, Advertisement 2%, Transport 1% และเลือกฟอร์ม ภ.ง.ด.53 (นิติบุคคล) / ภ.ง.ด.3 (บุคคลธรรมดา)
-  - `OverseasServiceTrigger` (class `lib/taxAutomator.ts:128`) — ตรวจจ่ายต่างประเทศ → ต้องทำ ภ.พ.36
-  - `TaxCalendarAlerts` (class `lib/taxAutomator.ts:146`) — เตือน deadline ภาษี + ลิงก์ e-Filing จริง (`TAX_FILING_URLS` `:6`, `RD_EFILING_HOMEPAGE` `:14`)
+**ปัญหา 2: ภาษีเป็นงานที่ต้องตรวจหลักฐานและจำแนกให้ถูก**
+- `lib/taxAutomator.ts` มี helper สำหรับตรวจ VAT, คำนวณ WHT และสร้างคำเตือน แต่การตรวจครั้งนี้ไม่พบการเรียก `InputTaxValidator` จาก expense UI/action จึงห้ามสรุปว่า validation ทำงานอัตโนมัติใน workflow บันทึกค่าใช้จ่าย
+- `WithholdingTaxEngine` มีอัตราตาม service type แต่เส้นทางอื่นกำหนด WHT แยกกัน และ `lib/rd-api.ts` hardcode 5% ในการส่ง WHT; นโยบายอัตรายังไม่สอดคล้องกัน
+- หน้า tax report แสดง draft/summary ไม่ใช่หลักฐานว่ายอดถูกต้องตามกฎหมายหรือพร้อมยื่น ดู `app/actions/tax-reports.ts` และให้ผู้ทำบัญชีตรวจหลักฐานก่อนยื่น
 
 **ปัญหา 3: ตั้งระบบให้ลูกค้าใช้เองไม่ได้ (สำคัญที่สุดสำหรับคุณพี่ฆัง)**
 - ปัญหา: ซอฟต์แวร์ SME ต้องติดตั้งเอง + ออก invoice ถูกต้อง + สำรองข้อมูลเอง
 - MBSuite แก้ด้วย:
   - **ติดตั้งครั้งเดียว** — `docker compose up -d --build` (`docker-compose.yml`)
   - **License ออกให้เองได้** — `node scripts/issue-license.mjs --mode perpetual --company "X"` (`lib/license.ts:74-78`)
-  - **สำรองข้อมูลอัตโนมัติ** — cron 02:00 ส่ง Google Drive เก็บ 30 วัน (`scripts/auto-backup.mjs:8`)
-  - **Dashboard บน Google Sheets** — cron 02:05 อัปเดตสรุปรายเดือน (`jobs/scheduleMaintenance.ts:11-15`)
+- **สำรองข้อมูลอัตโนมัติ** — มี script และ cron registration เมื่อ `CRON_ENABLED=true`; ต้องกำหนด credentials/สภาพแวดล้อมและทดสอบ restore เอง
+- **Dashboard บน Google Sheets** — scheduled `scripts/dashboard-sheet.mjs` เขียนข้อมูลลง 3 sheets; ปุ่มหน้า Dashboard ใช้อีก action ซึ่งปัจจุบันสร้าง spreadsheet แต่ไม่ได้เติมข้อมูล
 
 **ปัญหา 4: ซื้อขายเป็นรายเอกสาร → ต้องทำบัญชีเอง**
 - ระบบมีโมดูล Hosting เพิ่มใหม่ (`app/hosting/plans/`, `app/hosting/subscriptions/`) — จัดการสัญญาเช่าและออก invoice อัตโนมัติ
@@ -68,10 +65,10 @@
 
 | ยังไม่มี | หลักฐาน |
 |---|---|
-| ยื่นภาษีผ่าน RD API อัตโนมัติ | `lib/taxAutomator.ts:6-12` มีแต่**ลิงก์** ให้ไปยื่นเองที่ efiling.rd.go.th |
+| ยืนยันการยื่นภาษีผ่าน RD แบบ end-to-end | มี client ที่ส่ง request ไปยัง `baseUrl` ที่ตั้งค่าได้ แต่ไม่พบการยืนยันกับ RD production; batch submit เป็น stub และไฟล์ export ระบุว่าเป็น summary ไม่ใช่ format ยื่น |
 | เข้ารหัส backup ก่อนส่ง Drive | `scripts/auto-backup.mjs:97` — `zlib.gzipSync` แล้วอัปโลดตรง ไม่มี encryption |
 | Multi-company (หลายบริษัทใน 1 ระบบ) | `lib/license-check.ts:69` กำหนด `max_companies: 1` ตายตัว |
-| CI/CD pipeline | ไม่มี `.github/workflows` (ตรวจแล้ว — 0 ไฟล์) |
+| GitHub Actions workflow | ไม่พบ `.github/workflows`; ยังสรุปไม่ได้ว่าไม่มี CI จากผู้ให้บริการอื่น |
 | Restore script สำหรับ backup | ค้น `restore|decrypt` ใน `scripts/` แล้ว ไม่พบ script กู้คืน |
 
 ---
@@ -103,7 +100,7 @@
                        │
 ┌──────────────────────▼──────────────────────────────────┐
 │  DB: PostgreSQL (lib/db.ts — Pool max=3)                 │
-│  30+ ตาราง, schema จาก scripts/CURRENT_SCHEMA_MASTER.sql │
+│  PostgreSQL; schema/migrations ต้องยึด environment จริง │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -112,7 +109,7 @@
 ```
 ผู้ใช้กรอกใบแจ้งหนี้ (app/invoices/new/page.tsx)
    ↓
-ตรวจสิทธิ์: checkPermission(userId, 'invoices', 'create')
+หน้าและ server action: ตรวจ implementation แยกตามเส้นทาง; `createInvoice()` เองไม่เรียก `checkPermission()`
    ↓
 บันทึก invoices + invoice_items
    ↓
@@ -124,7 +121,7 @@
         Dr 1121 ลูกหนี้การค้า      Cr 4110 รายได้จากการขาย   (net)
         Dr 1121 ลูกหนี้การค้า      Cr 2122 ภาษีขายไม่ถึงกำหนด (vat)
    ↓
-ออกเลขเอกสารอัตโนมัติ: generateDocumentNumber() → INV-2026-10-001
+เลข invoice ที่ UI ขอจาก `getNextInvoiceNumber()`; รูปแบบต้องยึดค่าที่ action คืน ไม่อนุมานจากเลข journal
    ↓
 รายงาน/งบ P&L อ่านจาก journal_entries (lib/reports.ts)
 ```
@@ -149,12 +146,10 @@ createReceiptJournalEntry()  [lib/journaling.ts:389]
 ```
 กรอกค่าใช้จ่าย (app/expenses) + แนบหลักฐาน
    ↓
-InputTaxValidator.validate()  [class ที่ lib/taxAutomator.ts:26 — เป็น async ต้อง await]
-   ├─ เทียบ tax_id/address กับ company_settings
-   ├─ ตรวจหมวดห้ามหัก (รถยนต์ส่วนบุคคล ≤10 ที่นั่ง, ค่ารับรอง)
-   └─ ตรวจ VAT = Net × 7%
-   ↓
-createExpenseJournalEntry()  [lib/journaling.ts:448]
+createExpense() บันทึกรายการ แล้วเรียก createExpenseJournalEntry() [lib/journaling.ts]
+   ├─ ยังไม่พบการเรียก InputTaxValidator ใน expense UI/action
+   ├─ code สร้าง debit/credit entries ตาม category mapping ปัจจุบัน
+   └─ การบันทึก expense และ journal ไม่ได้ใช้ transaction เดียวกันในเส้นทางนี้
    ├─ Dr ตามหมวดค่าใช้จ่าย  Cr 2111 เจ้าหนี้การค้า   (amount - vat)
    ├─ ถ้ามี VAT: Dr 1140 ภาษีซื้อ  Cr 2111 เจ้าหนี้การค้า
    └─ ถ้ามี WHT: Dr 2111 เจ้าหนี้การค้า  Cr 2130 ภาษีหักณที่จ่ายค้างจ่าย
@@ -174,11 +169,13 @@ createExpenseJournalEntry()  [lib/journaling.ts:448]
 
 ```
 ปุ่ม "สรุปยอดส่งเข้า Google Drive" (components/SyncMonthlyButton.tsx)
-   ↓
-cron (ถ้า CRON_ENABLED=true) หรือกดเอง
-   ├─ 02:00 → scripts/auto-backup.mjs   → dump ทุกตาราง → gzip → Google Drive
-   │            └─ เก็บย้อนหลัง 30 วัน (KEEP_DAYS=30) ลบอัตโนมัติ
-   └─ 02:05 → scripts/dashboard-sheet.mjs → สรุปรายเดือน/รายจ่าย → Google Sheets
+   └─ exportMonthlySummaryToDrive() สร้าง spreadsheet ใหม่ แต่ไม่เขียนข้อมูลลง sheet
+
+เมื่อ CRON_ENABLED=true บน persistent Node process:
+   ├─ 02:00 → scripts/auto-backup.mjs → dump ตาราง public, gzip, upload Drive, cleanup ตามอายุ
+   └─ 02:05 → scripts/dashboard-sheet.mjs → เขียนข้อมูลสรุปลง 3 sheets
+
+การ upload backup สำเร็จไม่เท่ากับพิสูจน์ว่า restore ได้; ยังต้องซ้อม restore แยกต่างหาก
 ```
 
 ---
@@ -310,9 +307,9 @@ cron (ถ้า CRON_ENABLED=true) หรือกดเอง
 
 ### 4.5 เปิด/ปิดโมดูล (`/admin/modules`)
 
-- ตาราง `company_module_settings` เก็บสถานะเปิด/ปิดรายบริษัท (`lib/module-config.ts`)
+- ตาราง `company_module_settings` เก็บสถานะเปิด/ปิดโมดูล (`lib/module-config.ts`)
 - 5 หมวด: SALES, OPERATIONS, MASTER DATA, REPORTS, ADMIN
-- `MODULE_REGISTRY` มี **20 โมดูล** จัดกลุ่ม 5 หมวด (`lib/module-registry.ts:19-55`) — ส่วน `MODULES` ใน `lib/permissions.ts` มี 20 ชื่อสำหรับ RBAC (เป็นคนละ list กัน เพราะ RBAC ใช้ชื่อ `tax_reports`/`member_management` ขณะที่ registry ใช้ `tax_reports` + `modules_control`/`backup`)
+- `MODULE_REGISTRY` มี **21 โมดูล** จัดกลุ่ม 5 หมวด; `lib/permissions.ts` มี **20 permission modules** ซึ่งเป็นคนละรายการและคนละวัตถุประสงค์
 - **เพิ่งแก้บั๊ก**: หน้านี้เคยใช้ `categoryOrder` ที่ไม่ตรงกับ category จริง → แสดงได้แค่หมวด ADMIN (5 โมดูล) โมดูลธุรกิจอีก 16 โมดูลไม่แสดงเลย แก้แล้วใน version ล่าสุด
 - ปิดโมดูลผ่าน UI = override ใน DB · ปิดผ่าน env `NEXT_PUBLIC_MODULE_<ID>=false` = ค่า default (`lib/module-registry.ts:66-71`)
 
@@ -345,14 +342,13 @@ node scripts/issue-license.mjs --mode subscription --expires 2027-01-01 ...
 **รูปแบบ key:** `MBS.<base64url(payload)>.<base64url(HMAC-SHA256)>` (`lib/license.ts:33`)
 **ฝั่งแอปตรวจ:** `requireActiveLicense()` — ถ้า key ผิด/หมดอายุ **ระบบจะไม่สตาร์ท** (`instrumentation.ts:10-13`)
 
-### 4.8 Endpoint ที่ต้องเป็น admin
+### 4.8 การตรวจสิทธิ์ของ API
 
-ไล่ตรวจ `app/api/**/route.ts` ทั้ง 32 route ด้วย grep หา `requireAdmin|checkPermission|requireSession|getSession|auth()|verifyToken`:
+`proxy.ts` ตรวจ session สำหรับ route ที่ไม่ใช่ public แต่ session gate ไม่ได้แปลว่าผ่าน RBAC หรือเป็น admin การตรวจนี้เป็น static spot-check ไม่ใช่ inventory ที่รับรอง route ทุกตัว:
 
-- **มี auth guard ในตัว route เอง — 24 ตัว**
-- **ไม่มีในตัวเอง — 8 ตัว** แบ่งเป็น 2 กลุ่ม:
-  - **ตั้งใจเปิดสาธารณะ (2 ตัว):** `/api/login`, `/api/logout`
-  - **ต้อง login แต่ไม่ได้จำกัดสิทธิ์ (6 ตัว):** `/api/company`, `/api/contacts`, `/api/inventory`, `/api/payments`, `/api/fx-rate`, `/api/debug/auth` (ตัวหลังปิดแล้วคืน 404) — ป้องด้วย `proxy.ts` อย่างเดียว
+- ใช้ `requireAdmin()` สำหรับ operation ที่เป็น admin boundary
+- ใช้ `checkPermission()` เฉพาะเส้นทางที่มีการเรียกจริง; อย่าสรุปว่าทุก server action/API มี RBAC ครบ
+- ก่อนเปิด production ให้ตรวจ route และ server action ทั้งหมดเป็นรายการ พร้อมทดสอบ user/admin/unauthenticated
 
 | Route | การป้องกัน |
 |---|---|
@@ -384,19 +380,19 @@ node scripts/issue-license.mjs --mode subscription --expires 2027-01-01 ...
 
 ### 5.2 ตัวแปรแวดล้อมที่จำเป็น
 
-จาก `.env.example` (111 บรรทัด) — **บังคับ 4 ตัว**:
+จาก `.env.example` และ `lib/env.ts` — ต้องแยกเงื่อนไข runtime ปกติกับ production license:
 
 | ตัวแปร | บังคับ? | ใช้ทำอะไร | ถ้าไม่ตั้ง |
 |---|---|---|---|
-| `POSTGRES_URL` **หรือ** `DATABASE_URL` | ✅ | เชื่อม PostgreSQL | `lib/db.ts:9-13` throw ตอน module load |
-| `NEXTAUTH_SECRET` หรือ `AUTH_SECRET` | ✅ | เซ็น/ตรวจ JWT | `lib/auth.ts` + `proxy.ts` throw ตอน module load |
-| `NEXTAUTH_URL` | ✅ | base URL | `lib/env.ts` throw ใน `validateEnv()` |
-| `PRODUCT_MODE` | | `perpetual` (ค่าเริ่มต้น) หรือ `subscription` | default perpetual |
-| `BILLING_DATABASE_URL` | เฉพาะ Docker | compose ใช้ตัวนี้เป็นตัวแปรต้นทาง (`:25-26`) | **เพิ่มใหม่ใน version ล่าสุด** |
-| `LICENSE_SALT` | บังคับ production | sign/verify license | `lib/license.ts` throw |
-| `MBS_LICENSE_KEY` | บังคับ production | key ของลูกค้ารายนั้น | ไม่สตาร์ท (`instrumentation.ts:11-13`) |
-| `CRON_ENABLED` | | `true` เปิดงานอัตโนมัติ | default false |
-| `SESSION_MAX_AGE` | | อายุ session วินาที | default 86400 (1 วัน) |
+| `DATABASE_URL` | ✅ ทุก runtime ตาม `validateEnv()` | `lib/env.ts` ตรวจตอน startup |
+| `POSTGRES_URL` | ตัวเลือก DB URL สำหรับ `lib/db.ts` แต่เพียงตัวเดียวไม่ผ่าน `validateEnv()` ปัจจุบัน | ตั้ง `DATABASE_URL` ด้วย |
+| `NEXTAUTH_URL` | ✅ ทุก runtime | ต้องเป็น URL ที่ขึ้นต้นด้วย http(s) |
+| `NEXTAUTH_SECRET` หรือ `AUTH_SECRET` | ✅ ทุก runtime | ใช้เซ็น/ตรวจ custom JWT ด้วย `jose` |
+| `BILLING_DATABASE_URL` | ✅ เมื่อใช้ compose ปัจจุบัน | compose map ไป `DATABASE_URL`/`POSTGRES_URL` |
+| `LICENSE_SALT`, `MBS_LICENSE_KEY` | ✅ เมื่อรัน production | `instrumentation.ts` บังคับ license ตอน runtime |
+| `PRODUCT_MODE` | ไม่บังคับ | ค่าเริ่มต้น `perpetual`; `subscription` ต้องใช้ license ที่มีวันหมดอายุ |
+| `CRON_ENABLED` | ไม่บังคับ | ค่าเริ่มต้นปิด; เปิด cron ใน process ที่ทำงานต่อเนื่อง |
+| `SESSION_MAX_AGE` | ไม่บังคับ | validator ตรวจรูปแบบเมื่อมีค่า; login route ตั้ง cookie 1 วัน |
 
 > `validateEnv()` ถูกเรียกที่ `instrumentation.ts:6` ตอน server startup — ตรวจ fail-fast ก่อนรับ request
 
@@ -418,8 +414,8 @@ docker network create stack_stack    # ถ้ายังไม่มี
 #    MBS_LICENSE_KEY=<key ที่ออกให้ลูกค้า>
 #    NEXTAUTH_SECRET / AUTH_SECRET=<random>
 
-# 4) สร้าง schema (ถ้าฐานยังว่าง)
-psql "$BILLING_DATABASE_URL" -f scripts/CURRENT_SCHEMA_MASTER.sql
+# 4) เตรียม schema ผ่าน migration/runbook ที่ตรวจแล้วสำหรับ environment นี้
+#    อย่ารัน scripts/CURRENT_SCHEMA_MASTER.sql โดยไม่ review; เป็น schema snapshot เก่า
 
 # 5) รัน
 docker compose up -d --build
@@ -435,19 +431,13 @@ docker compose up -d --build
 ### 5.4 ติดตั้งแบบ B — Local (สำหรับ dev) — **ขัดแย้งกับ compose**
 
 ```bash
-npm install                      # หรือ pnpm install
+pnpm install
 cp .env.example .env.local
-# ใส่ DATABASE_URL (Neon หรือ local postgres)
-npm run dev                      # http://localhost:3000
+# ตั้ง DATABASE_URL, NEXTAUTH_URL=http://localhost:3000 และ NEXTAUTH_SECRET หรือ AUTH_SECRET
+pnpm dev                         # http://localhost:3000
 ```
 
-**⚠️ ความไม่สอดคล้องที่พบ (แก้เอกสารแล้วบางส่วน):**
-1. `README.md:84` สอน `DATABASE_URL = postgresql://mbs:mbs@db:5432/mbs?sslmode=disable` แต่ `docker-compose.yml` **ไม่มี service ชื่อ `db`** เลย
-2. `README.md:89` บอก "สร้าง PostgreSQL + app พร้อมกัน — schema โหลดอัตโนมัติ" — **ไม่จริง** compose ไม่มี DB service และไม่มี logic โหลด schema
-3. `README.md:91` บอกเข้าที่ `http://localhost:3000` — จริงแล้ว compose ผูก `127.0.0.1:3001:3000` (`:52`)
-4. `README.md:92` บอกให้กด `promote` เป็น superadmin — **วิธีนี้ใช้ไม่ได้แล้ว** ดู 5.5
-5. `.env.example` เดิมไม่มี `BILLING_DATABASE_URL` ทั้งที่ compose ใช้ทั้ง `POSTGRES_URL` และ `DATABASE_URL` (`:25-26`) → **เพิ่มแล้วใน version ล่าสุด**
-6. `lib/db.ts:9` อ่าน `POSTGRES_URL` ก่อน `DATABASE_URL` (`process.env.POSTGRES_URL || process.env.DATABASE_URL`) — compose ตั้งทั้งสองเป็นค่าเดียวกันจึงไม่มีปัญหา แต่ `.env.example` ประกาศ `DATABASE_URL` ที่หัวข้อ 1 (บรรทัด 21) และ `POSTGRES_URL`/`BILLING_DATABASE_URL` ที่หัวข้อ 5d (บรรทัด 78-79) แยกกัน — **ถ้าตั้งค่าต่างกันจะได้พฤติกรรมไม่ตรงที่คาด เพราะ `POSTGRES_URL` จะถูกอ่านก่อน**
+Local dev ใช้ `DATABASE_URL` โดยตรง ส่วน Compose เป็นอีก topology: ใช้ `BILLING_DATABASE_URL` เป็น input, external `stack_stack` network และ external PostgreSQL; Compose ไม่มี DB service และไม่ bootstrap schema ให้อัตโนมัติ. README ได้รับการแก้ให้สะท้อนข้อแตกต่างนี้แล้ว แต่ยังไม่ได้ทดสอบ deployment จริง.
 
 > **หมายเหตุ:** Dockerfile มี placeholder env สำหรับ build stage (บรรทัด 22-25) เพื่อให้ fail-fast guard ผ่านตอน collect page data — แต่ค่าจริงถูกส่งเข้าตอน runtime ผ่าน compose
 
@@ -465,7 +455,7 @@ npm run dev                      # http://localhost:3000
 - ถ้าไม่ล็อก ผู้สมัคร 2 คนพร้อมกันบนตารางว่างจะเห็น users=0 ทั้งคู่ → **ได้ superadmin ทั้งคู่**
 
 **หน้า `/register/promote` ใช้ไม่ได้แล้ว — README เดิมบอกให้กด promote ทิ้ง**
-- หน้านั้นผูกอีเมลตายตัว `k.net.game01@gmail.com` ในทั้ง 2 จุด — เรียก action (`page.tsx:15`) และข้อความบนหน้า (`page.tsx:39`)
+- หน้านั้นผูกอีเมลตายตัวในทั้ง 2 จุด — เรียก action และข้อความบนหน้า (ไม่เผยอีเมลส่วนตัวซ้ำในเอกสารนี้)
 - `promoteUserAction()` (`app/register/db-init.ts:67`) ตรวจ `requireAdmin()` แล้ว → คนที่ยัง login ไม่ได้ (status=`Pending`) จะได้ `gate.ok = false`
 - **ผลคือวนไปตลอด:** คนแรกได้ superadmin จาก bootstrap อยู่แล้ว ส่วนคนที่ต้องการ promote คือคนที่ยังเป็น Pending ซึ่งเข้า `/admin/members` ไม่ได้ → หน้านี้เป็น dead end
 - ถ้าจำเป็นต้องคงไว้ ต้องแก้ให้รับอีเมลจาก input (ยังต้องมี `requireAdmin()` คงอยู่) — **ยังไม่ได้แก้**
@@ -474,15 +464,15 @@ npm run dev                      # http://localhost:3000
 
 | คำสั่ง | ทำอะไร |
 |---|---|
-| `npm run dev` | โหมดพัฒนา (port 3000) |
-| `npm run build` | build production |
-| `npm start` | รัน production |
-| `npm test` | รันเทสต์ (`tests/**/*.test.mjs` — **ไม่รวมไฟล์ .ts**) |
-| `npm run lint` | ESLint |
-| `npm run tax:update` | อัปเดตยอดภาษีจากข้อมูลจริง |
-| `npm run ai:audit` | AI Auditor ตรวจความผิดปกติ |
-| `npm run check:knowledge` | ตรวจว่าโค้ดเปลี่ยนแล้วเอกสารอัปเดตหรือยัง |
-| `npm run check:consistency` | ตรวจความสอดคล้องรายสัปดาห์ |
+| `pnpm dev` | โหมดพัฒนา (ปกติ port 3000) |
+| `pnpm build` | build production |
+| `pnpm start` | รัน production |
+| `pnpm test` | รันเฉพาะ `tests/**/*.test.mjs`; ไม่รัน `tests/taxAutomator.test.ts` |
+| `pnpm lint` | ESLint ทั้ง repository |
+| `pnpm tax:update` | รัน tax update job; ไม่ใช่การยื่นแบบ |
+| `pnpm ai:audit` | รัน AI Auditor |
+| `pnpm check:knowledge` | ตรวจ knowledge sync |
+| `pnpm check:consistency` | ตรวจ consistency script |
 
 ### 5.7 ตั้งงานอัตโนมัติ (cron)
 
@@ -533,9 +523,9 @@ npm run dev                      # http://localhost:3000
    ↓
 <form action={serverAction}>  → Next.js เรียกฟังก์ชันที่มี "use server"
    ↓
-① requireAdmin() / checkPermission()   ← ตรวจสิทธิ์ก่อนเสมอ
-② validate input                        ← ตรวจความครบถ้วน
-③ withTransaction(client => {           ← ถ้าต้อง atomic
+① ตรวจ authentication/authorization ตาม action จริง
+② validate input                        ← ขอบเขต validation แตกต่างกันตาม action
+③ withTransaction(client => {           ← ใช้เฉพาะ flow ที่ต่อ client เดียวกัน
      BEGIN
      ... queries ...
      COMMIT                              ← lib/db.ts:44-63
@@ -666,6 +656,8 @@ new Pool({
 
 ### 7.1 เวอร์ชันจาก Git
 
+ครบทั้งสาขา ณ 2 ต.ค. 2026
+
 | Commit | วันที่ | รายละเอียด |
 |---|---|---|
 | `fb12f59` | 21 ก.ย. | นำเข้า Micro Business Suite (สะอาด จาก Micro-Account ไม่มีประวัติ ไม่มีข้อมูลลูกค้า) |
@@ -686,6 +678,15 @@ new Pool({
 | `7e4bcdc` | 2 ต.ค. | เลิก track next-env.d.ts (build artifact) |
 | `db1a171` | 2 ต.ค. | ปิดช่องโหว่ P1 (escalation, secret exposure, authz) |
 | `b432102` | 2 ต.ค. | hosting query ผ่าน lib/db แทน @vercel/postgres |
+| `4cbcf58` | 2 ต.ค. | ปรับ registration notice และเพิ่ม BILLING_DATABASE_URL ใน env example |
+| `6b9e366` | 2 ต.ค. | เพิ่ม consolidated documentation |
+| `9f701da` | 2 ต.ค. | เพิ่ม admin layout guard และ login-throttle tests |
+| `93b97d1` | 2 ต.ค. | ลบไฟล์ว่าง 4 ไฟล์ที่ root (`micro-account@0.1.0`, `next`, `psql`, `rmdir`) |
+| `faeb48a` | 2 ต.ค. | merge `gitea/main` เข้ามา — gitea/main เคยได้ commit 3 ชุดเดียวกันเป็นคนละ object |
+
+> ตารางนี้แสดง 21 commit จาก 26 ที่มีในสาขาปัจจุบัน · ที่เหลือคือ `cbc8ec1`, `dd6e44d`, `a586411`
+> ซึ่งเป็น commit 3 ชุดเดียวกับ `7a79d9b`, `7e4bcdc`, `b432102` แต่ถูก push ไป `gitea/main` ก่อนหน้า
+> จึงได้ hash ต่างกัน (ดู 7.5.7)
 
 ### 7.2 v0.1.0 — security hardening (2 ต.ค. 2026)
 
@@ -701,7 +702,7 @@ new Pool({
 | P3 | `/api/db_schema` เปิด metadata ใบแจ้งหนี้ | ✅ CLOSED | เรียก `requireAdmin()` |
 
 **ไฟล์ใหม่:** `app/admin/layout.tsx`, `app/admin/page.tsx`, `lib/login-throttle.mjs`, `tests/login-throttle.test.mjs`
-**ผลทดสอบ:** `npm test` → 14/14 ผ่าน
+**ผลทดสอบ:** `pnpm test` → 14/14 ผ่าน ณ 2026-10-02
 
 ### 7.3 v0.1.1 — onboarding & install alignment (2 ต.ค. 2026, รอบนี้)
 
@@ -709,31 +710,33 @@ new Pool({
 
 | # | ไฟล์ | ปัญหา | การแก้ |
 |---|---|---|---|
-| 1 | `.env.example` | ไม่มี `BILLING_DATABASE_URL` แต่ `docker-compose.yml:25-26` ใช้เป็นตัวแปรต้นทาง | เพิ่มในหมวด 5d พร้อมหมายเหตุว่า `lib/db.ts` อ่าน `POSTGRES_URL` ก่อน |
-| 2 | `AUDIT-2026-10-01.md:7` | เขียน "passed all 12 tests" แต่จริง 14 (บรรทัด 61 เขียนถูก) | แก้เป็น 14 ให้ตรงกัน |
+| 1 | `.env.example` | เดิมไม่มี `BILLING_DATABASE_URL` แต่ compose ใช้เป็นตัวแปรต้นทาง | เพิ่ม key ในหมวด 5d; README Docker instructions ได้รับการแก้ให้ตั้งชื่อตัวแปรตรงกันแล้ว |
+| 2 | `AUDIT-2026-10-01.md` | ฉบับก่อนหน้าระบุ 12 tests ทั้งที่รันได้ 14 | audit ปัจจุบันระบุ 14 และ full lint/typecheck results แล้ว |
 | 3 | `app/admin/modules/page.tsx` | **บั๊กจริง** — `categoryOrder` = `[admin, finance_accounting, finance_tax, stock, hr, sales_co, service]` แต่ registry ใช้ `[sales, operations, master_data, reports, admin]` → **แสดงได้แค่หมวด ADMIN (5 โมดูล) โมดูลธุรกิจอีก 16 โมดูลไม่แสดงเลย** | แก้ `categoryOrder` + เพิ่ม `CATEGORY_LABELS` แสดงชื่อไทย/อังกฤษ |
 | 4 | `app/register/page.tsx` | ไม่มีคำอธิบายว่าคนแรกได้ superadmin / คนถัดไปเป็น Pending | เพิ่มกล่องแจ้งเตือน (ตรงกับ logic ใน `registration-bootstrap.mjs`) |
 
-**ผลตรวจสอบหลังแก้:**
+**ผลตรวจสอบที่บันทึกในรอบนั้น:**
 ```
-npm test        → 14/14 ผ่าน
-npx tsc --noEmit → error 17 จุด (ทั้งหมดอยู่ใน tests/taxAutomator.test.ts ไฟล์เดียว — ดู 7.5)
+pnpm test          → 14/14 ผ่าน
+pnpm exec tsc --noEmit → 17 errors ใน tests/taxAutomator.test.ts (ดู 7.5)
 ```
 
-### 7.4 v0.1.0 — เอกสารรวม (2 ต.ค. 2026, รอบนี้)
+### 7.4 v0.1.2 — เอกสารรวม (2 ต.ค. 2026)
 
 - สร้าง `docs/MICRO-BUSINESS-SUITE-DOCUMENTATION.md` — รวม 7 หัวข้อไว้ไฟล์เดียว
-- อ้างอิงเอกสารเดิม 13 ไฟล์ไว้ท้ายเป็นภาคผนวก (ไม่ลบไฟล์ใด)
-- เนื้อหาทุกส่วนอ้างอิงไฟล์จริงพร้อมเลขบรรทัด
+- อ้างอิงเอกสารเดิม 14 ไฟล์ไว้ท้ายเป็นภาคผนวก (ไม่ลบไฟล์ใด)
+- อ้างอิง source paths และ symbols ที่ใช้ตรวจ; line numbers ในเอกสารเป็น snapshot และต้อง recheck ก่อนใช้เป็นตำแหน่งอ้างอิง
+- **รอบตรวจซ้ำ (2 ต.ค. 2026):** ถอดข้อความที่ยืนยันไม่ได้ออกจากเอกสาร ได้แก่ การอ้างว่า journal เป็น single source of truth ทั้งระบบ, การอ้างว่า `InputTaxValidator` ทำงานอัตโนมัติใน expense flow, การอ้างว่า `checkPermission()` ครอบคลุม invoice creation, ตาราง route ที่นับจาก grep และผลทดสอบตัวเลขที่ล้าสมัย — เหลือเฉพาะที่ตรวจจาก source แล้ว
+- ถอดคำสั่งรัน `scripts/CURRENT_SCHEMA_MASTER.sql` ออกจากขั้นตอนติดตั้ง เพราะไฟล์นั้นเป็น schema snapshot เก่าที่สร้าง FK ไปยังตารางก่อนที่ตารางนั้นจะถูกสร้างในไฟล์
 
 ### 7.5 ⚠️ ปัญหาที่ยัง**ไม่ได้แก้** — ต้องตัดสินใจ
 
 #### 7.5.1 `tests/taxAutomator.test.ts` เป็นไฟล์ตาย
 
-**อาการ:** `npm test` ผ่าน 14/14 แต่ `npx tsc --noEmit` แจ้ง error 17 จุด
+**อาการ:** `pnpm test` ผ่าน 14/14 แต่ `pnpm exec tsc --noEmit` แจ้ง error 17 จุด
 **สาเหตุ 2 ชั้น:**
 
-1. **ไม่ได้รัน** — `package.json:9` ใช้ `node --test tests/**/*.test.mjs` → glob นี้ไม่ match ไฟล์ `.ts`
+1. **ไม่ได้รันโดย test script** — `package.json` ใช้ `node --test tests/**/*.test.mjs` → เลือกเฉพาะ `.mjs`; TypeScript compiler ยังตรวจ `.test.ts` และพบ errors
    → เทสต์ภาษีทั้งชุด **ไม่เคยทำงาน** ตั้งแต่เขียนมา
 2. **โค้ดพังจริง** — เขียนสมัยที่ API เป็น sync:
    - `COMPANY_TAX_ID`, `COMPANY_ADDRESS` — **ไม่มี export** นี้ใน `lib/taxAutomator.ts` (export มีแค่ `TAX_FILING_URLS`, `RD_EFILING_HOMEPAGE` ที่ `:6`/`:14` และ 4 class — ย้ายไปอ่านจาก `company_settings` ผ่าน `getCompanySettings()` ที่ `:37` แล้ว)
@@ -743,7 +746,7 @@ npx tsc --noEmit → error 17 จุด (ทั้งหมดอยู่ใน
 | ทางเลือก | ผลลัพธ์ | ข้อเสีย |
 |---|---|---|
 | ก. แก้ให้รันได้ | เพิ่ม `await`, mock `getCompanySettings()`, เปลี่ยนเป็น `.mjs` | ต้อง mock DB — เขียนงานเพิ่ม |
-| ข. ลบทิ้ง | `npx tsc --noEmit` สะอาด | เสียเทสต์ครอบคลุม logic ภาษี |
+| ข. ลบทิ้ง | `pnpm exec tsc --noEmit` สะอาด | เสียเทสต์ครอบคลุม logic ภาษี |
 | ค. เปลี่ยน test script ให้รัน `.ts` ด้วย | เจอปัญหาทันที | ต้องเพิ่ม `tsx` loader |
 
 > **ผมยังไม่ได้แก้** เพราะทั้ง 3 ทางเปลี่ยนพฤติกรรมการทดสอบของโปรเจกต์ — เกินขอบเขตที่พี่สั่ง
@@ -755,32 +758,42 @@ npx tsc --noEmit → error 17 จุด (ทั้งหมดอยู่ใน
 - Drive ปกติเข้ารหัสระหว่างส่ง (HTTPS + Google encrypt at rest) แต่ **คนที่มีสิทธิ์เข้าโฟลเดอร์อ่านได้**
 - ควร: เข้ารหัสก่อนอัปโหลด (เช่น AES-256-GCM) หรือแยกข้อมูลลับออกจาก backup
 
-#### 7.5.3 `README.md` ขัดกับ `docker-compose.yml`
+#### 7.5.3 Deployment topology ที่ยังต้องเตรียมก่อน deploy
 
-| README สอน | Compose จริง |
-|---|---|
-| `DATABASE_URL=...@db:5432/mbs` | ไม่มี service `db` |
-| ไม่พูดถึง `BILLING_DATABASE_URL` | ต้องใช้ตัวนี้เป็นหลัก |
-| ไม่พูดถึง network `stack_stack` | จำเป็น (external) |
-| เข้า `http://localhost:3000` | ผูก `127.0.0.1:3001` |
+README และ env instructions ได้รับการแก้ให้ตรงกับ Compose แล้ว อย่างไรก็ตาม Compose ยังพึ่ง external PostgreSQL, external network `stack_stack`, การเตรียม schema แยก และ reverse proxy สำหรับการเข้าถึงจากภายนอก การ deploy จริงยังไม่ถูกทดสอบ
 
-**ยังไม่ได้แก้ README** — เพราะต้องตัดสินใจก่อนว่าจะรองรับโหมดไหนเป็นหลัก
+#### 7.5.4 Route-level authorization ยังต้องมี inventory ครบ
 
-#### 7.5.4 7 API route ไม่มี auth check ในตัวเอง
+`proxy.ts` ตรวจ session แต่ไม่ได้แทน per-route RBAC; ยังไม่ควรใช้ตัวเลข route ที่ผ่าน/ไม่ผ่าน guard จาก grep เดี่ยวเป็นหลักฐานรับรอง production
+- จัดทำ inventory ของ API และ server actions พร้อม permission ที่ต้องใช้
+- เพิ่ม route-level tests สำหรับ role และ module permission หลังยืนยัน policy ของแต่ละ endpoint
 
-`/api/company`, `/api/contacts`, `/api/inventory`, `/api/payments`, `/api/fx-rate` (+ debug/login/logout)
-- ป้องด้วย `proxy.ts` อย่างเดียว (ต้อง login) แต่ผู้ login แล้วทุกคนเรียกได้
-- **ควรเพิ่ม** `checkPermission(userId, 'contacts', 'read')` ฯลฯ ตาม RBAC
+#### 7.5.5 GitHub workflow และคุณภาพ static checks
 
-#### 7.5.5 ยังไม่มี CI/CD
-
-- `.github/workflows/` — **ไม่มีไฟล์** (ตรวจแล้ว)
-- `docs/DECISIONS.md:30` อ้างว่ามี `.github/workflows/*` — **เอกสารไม่ตรงกับความจริง**
-- ผลตอนนี้: lint มี 363 error, ไม่มี gate กันไม่ให้ commit
+- ไม่พบ `.github/workflows/` ใน repository ณ วันที่ตรวจ; ไม่ได้ยืนยัน CI จาก provider อื่น
+- `pnpm lint` ณ 2026-10-02: **363 errors, 169 warnings**
+- `pnpm exec tsc --noEmit`: **17 errors** ใน `tests/taxAutomator.test.ts`
+- `pnpm test`: **14 passed**; คำสั่งนี้ไม่รัน test ไฟล์ `.ts`
 
 #### 7.5.6 Lazy migration ขัดกับนโยบายตัวเอง
 
 ดูข้อ 6.6 — `CREATE TABLE IF NOT EXISTS` เรียกตอนใช้งาน ขัดกับ `RBAC_STANDARD.md:40-42`
+
+#### 7.5.7 ประวัติ commit ซ้ำระหว่างสอง remote
+
+commit 3 ชุดเดียวกันถูกสร้างเป็น 2 object คนละ hash เพราะถูก commit/push ไปคนละ remote ก่อนที่สองฝั่งจะ sync กัน:
+
+| สาขานี้ | `gitea/main` | เนื้อหา |
+|---|---|---|
+| `7a79d9b` | `cbc8ec1` | gitignore license_key.txt + .opencode/ |
+| `7e4bcdc` | `dd6e44d` | เลิก track next-env.d.ts |
+| `b432102` | `a586411` | hosting query ผ่าน lib/db |
+
+แก้แล้วด้วย merge commit `faeb48a` — ตอนนี้ `gitea/main` เป็น ancestor ของสาขานี้แล้ว
+
+> ต่างกันจุดเดียว: `gitea/main` ยังเก็บไฟล์ว่าง 4 ไฟล์ที่ root (`micro-account@0.1.0`, `next`, `psql`, `rmdir`)
+> ซึ่งถูกลบใน `93b97d1` — ถ้า merge `main` กลับเข้ามาเมื่อไร ไฟล์เหล่านี้จะกลับมาต้องลบซ้ำ
+> ที่มาของไฟล์: คำสั่งลบที่ redirect ผิดทางจึงสร้างไฟล์เปล่าแทนที่จะลบ — ควรใช้ `rm` ที่ quote path เสมอ
 
 ---
 
@@ -788,31 +801,27 @@ npx tsc --noEmit → error 17 จุด (ทั้งหมดอยู่ใน
 
 ไฟล์เหล่านี้**ยังอยู่ครบ ไม่ได้ลบ** เนื้อหาละเอียดอยู่ในไฟล์เหล่านี้:
 
-| ไฟล์ | ขนาด | มีอะไร |
-|---|---|---|
-| `docs/COMPLETE_MANUAL.md` | 24 KB | คู่มือครบทุกโมดูล (ละเอียดที่สุด — **แนะนำให้ลูกค้าอ่านไฟล์นี้**) |
-| `docs/THAI_TAX_GUIDE.md` | 22 KB | ความรู้ภาษีไทย (VAT/WHT/PP36) |
-| `docs/USER_MANUAL.md` | 5 KB | คู่มือผู้ใช้สั้น |
-| `docs/manual.md` | 5.6 KB | คู่มือ (ทับซ้อนกับ USER_MANUAL) |
-| `docs/DECISIONS.md` | 3.2 KB | บันทึก architectural decisions |
-| `docs/BUSINESS_RULES.md` | 2.8 KB | กฎธุรกิจ |
-| `docs/SUPPLIER_INVOICE_GUIDE.md` | 4 KB | คู่มือใบแจ้งหนี้ซัพพลายเออร์ |
-| `docs/LOGIN_PROBLEM_RESOLVED.md` | 5.3 KB | ประวัติแก้ปัญหา login |
-| `docs/ARCHITECTURE.md` | 1.5 KB | สถาปัตยกรรม (มีข้อมูล FX rate) |
-| `docs/CHANGELOG_PROJECT.md` | 1.6 KB | changelog เชิงพฤติกรรม |
-| `docs/RBAC_STANDARD.md` | 1.3 KB | มาตรฐาน RBAC (บังคับใช้) |
-| `docs/KNOWLEDGE_PACK.md` | 864 B | ความรู้ภาษีแบบย่อ |
-| `docs/PND53.txt`, `docs/PP30.txt` | 5 B แต่ละไฟล์ | เทมเพลตว่าง |
+| ไฟล์ | เนื้อหา/ข้อควรระวัง |
+|---|---|
+| `docs/COMPLETE_MANUAL.md` | คู่มือโมดูล; มี caveat สำหรับขั้นตอนที่ยังไม่ยืนยัน |
+| `docs/THAI_TAX_GUIDE.md` | ข้อมูลประกอบภาษี; ต้องตรวจข้อกำหนดปัจจุบันกับผู้ทำบัญชี |
+| `docs/USER_MANUAL.md`, `docs/manual.md` | คู่มือผู้ใช้; บาง workflow มีข้อจำกัดระบุไว้ |
+| `docs/DECISIONS.md`, `docs/BUSINESS_RULES.md` | บันทึก decisions และกฎธุรกิจ |
+| `docs/SUPPLIER_INVOICE_GUIDE.md` | แจ้งความขัดแย้ง COA/WHT กับ implementation |
+| `docs/LOGIN_PROBLEM_RESOLVED.md` | ประวัติ login; root cause เก่ายังยืนยันย้อนหลังไม่ได้ |
+| `docs/ARCHITECTURE.md`, `docs/CHANGELOG_PROJECT.md` | สถาปัตยกรรมและ changelog |
+| `docs/RBAC_STANDARD.md`, `docs/KNOWLEDGE_PACK.md` | มาตรฐานสิทธิ์และลำดับเอกสารความรู้ |
+| `docs/PND53.txt`, `docs/PP30.txt` | คำเตือน placeholder; ไม่ใช่ template สำหรับยื่นภาษี |
 
 **ไฟล์ที่อยู่ที่ root (ไม่ใช่ใน docs/):**
-| ไฟล์ | ขนาด | มีอะไร |
-|---|---|---|
-| `AUDIT-2026-10-01.md` | 5 KB | ผล audit ความปลอดภัย (Reassessment 2 ต.ค.) |
-| `CORE_RULES.md` | 30 KB | กฎระบบหลัก (ใหญ่ที่สุด — อ่านก่อนแก้โค้ด) |
-| `AUTH_RULES.md` | 2.2 KB | กฎระบบ auth |
+| ไฟล์ | เนื้อหา |
+|---|---|
+| `AUDIT-2026-10-01.md` | ผล reassessment ด้านความปลอดภัยและ verification limits |
+| `CORE_RULES.md` | กฎระบบหลัก |
+| `AUTH_RULES.md` | ข้อกำหนด authentication |
 
 **ผู้ควรอ่านอะไรก่อน:**
-- ลูกค้า → `COMPLETE_MANUAL.md`
+- ลูกค้า → คู่มือที่ผ่านการตรวจล่าสุด พร้อมตรวจข้อจำกัดในเอกสารรวมก่อนใช้ workflow ที่เกี่ยวกับภาษี/บัญชี
 - ผู้ดูแล → หัวข้อ 4 ของไฟล์นี้ + `RBAC_STANDARD.md`
 - นักพัฒนา → `CORE_RULES.md` + หัวข้อ 6 ของไฟล์นี้
 - ฝ่ายภาษี → `THAI_TAX_GUIDE.md`

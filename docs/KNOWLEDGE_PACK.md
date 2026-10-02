@@ -18,6 +18,7 @@ All AI and human contributors should use this pack as the primary operational me
 - `ARCHITECTURE.md`: technical structure and data flow
 - `DECISIONS.md`: key architecture/product decisions and rationale
 - `CHANGELOG_PROJECT.md`: meaningful behavior changes over time
+- `MICRO-BUSINESS-SUITE-DOCUMENTATION.md`: consolidated implementation snapshot, known gaps, and verification state; it does not replace canonical rules or live source verification
 
 ## Update Policy
 

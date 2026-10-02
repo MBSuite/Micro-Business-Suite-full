@@ -44,3 +44,7 @@
 - Why this was chosen: หลักฐานตรวจสอบย้อนหลังได้, ตัวเลขภาษีถูกต้อง
 - Impacted files/modules: `docs/BUSINESS_RULES.md`, พฤติกรรมการบันทึก expenses
 - Rollback plan: none — เป็นกฎการทำงาน ไม่กระทบ schema
+
+## Implementation Status Note (2026-10-02)
+
+The 2026-04-09 governance entry records that GitHub workflows were added at that time. A current repository check found no `.github/workflows/` files, while the guard scripts and tests remain present. The current CI provider/status was not verified; treat the old entry as historical, not proof that an active workflow still runs.

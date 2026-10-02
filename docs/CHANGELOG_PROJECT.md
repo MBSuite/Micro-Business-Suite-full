@@ -29,3 +29,10 @@ Tracks meaningful behavior/architecture changes (not every small code diff).
   - RBAC group permission page now uses shared permission modules
   - added `services` and `payroll` routes for menu completeness
 
+## [2026-10-02]
+
+- Reconciled project documentation with the current implementation: custom JWT/proxy authentication, deployment environment requirements, and dashboard sync behavior.
+- Clarified that tax exports are preparation summaries, not official RD filing files; recorded unresolved WHT/COA implementation discrepancies for accountant and developer review.
+- Added a status note that the historical GitHub workflow entry is not proof of an active workflow; no `.github/workflows/` files were found in the current checkout.
+- Verified test/type/lint snapshot: `pnpm test` 14 passed; `pnpm exec tsc --noEmit` 17 errors in `tests/taxAutomator.test.ts`; `pnpm lint` 363 errors and 169 warnings. These are point-in-time results, not release approval.
+
