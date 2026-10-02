@@ -58,7 +58,7 @@ export default function MembersPage() {
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [userGroups, setUserGroups] = useState<number[]>([]);
 
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();

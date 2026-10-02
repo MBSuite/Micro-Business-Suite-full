@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { FileSpreadsheet, Download, Loader2, AlertCircle, CheckCircle2, FileText, Printer } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, FileText, Printer } from 'lucide-react';
 import { formatDateDisplay } from "@/lib/dateFormatter";
 import { exportJournalsToExcel, getJournalEntries } from '@/app/actions';
 

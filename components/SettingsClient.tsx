@@ -2,21 +2,16 @@
 
 import { useState } from "react";
 import {
-   Building2,
-   Users,
-   Mail,
-   Phone,
-   MapPin,
-   Globe,
-   Database,
-   Save,
-   ShieldCheck,
-   Briefcase,
-   Percent,
-   Coins,
-   FileDigit,
-   CloudUpload,
-   Cloud
+  Building2,
+  Database,
+  Save,
+  ShieldCheck,
+  Briefcase,
+  Percent,
+  Coins,
+  FileDigit,
+  CloudUpload,
+  Cloud,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updateCompanySettings } from "@/app/actions";

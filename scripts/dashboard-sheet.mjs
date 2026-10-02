@@ -3,8 +3,6 @@ import { dbPool, googleAuth, drive } from "./google-auth.mjs";
 const TITLE = "MBSuite Dashboard (Auto)";
 const SHEETS = ["ภาพรวมรายเดือน", "รายจ่ายแยกหมวด", "รายการล่าสุด"];
 
-const round2 = (n) => (n == null ? 0 : Math.round(n * 100) / 100);
-
 async function queryPool(pool, sql, params) {
   const { rows } = await pool.query(sql, params);
   return rows;

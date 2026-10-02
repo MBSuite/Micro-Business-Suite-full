@@ -25,7 +25,7 @@ async function getExpenseData(id: string) {
     const company = companyRes.rows[0] || {};
 
     return { expense, company };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -93,7 +93,6 @@ export default async function Wht53Page({ params }: { params: Promise<{ id: stri
   const whtRate = Number(expense.wht_rate || 3);
   const whtAmount = Number(expense.wht_amount || (netAmount * whtRate / 100));
 
-  const issueDate = new Date(expense.expense_date || expense.created_at);
   const thaiDate = formatDateDisplay(expense.expense_date || expense.created_at, { formatLong: true });
 
   const bahtText = numberToThaiWords(whtAmount);

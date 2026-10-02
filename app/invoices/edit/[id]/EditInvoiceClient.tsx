@@ -2,7 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle2, Hash, Loader2, Plus, Save, ShoppingBag, Trash2, User, ChevronRight } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  Plus,
+  Save,
+  ShoppingBag,
+  Trash2,
+  User,
+  ChevronRight,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   getContacts,
@@ -11,7 +22,6 @@ import {
 } from "@/app/actions";
 
 const PROFIT_OPTIONS = [10, 15, 20, 25, 30, 50, 100, 200];
-const DISCOUNT_OPTIONS = [0, 3, 5, 10, 15];
 
 type InvoiceItem = {
   id: number;

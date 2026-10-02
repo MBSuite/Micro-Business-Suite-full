@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShieldCheck, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 // We use a small server action for this fix instead

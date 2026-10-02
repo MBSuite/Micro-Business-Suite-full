@@ -13,7 +13,7 @@ async function getInvoice(id: string) {
       WHERE i.id = $1
     `, [id]);
     return res.rows[0];
-  } catch (e) {
+  } catch {
     return null;
   }
 }

@@ -295,7 +295,7 @@ export async function generateDocumentNumber(
     
     const nextNumber = (parseInt(rows[0].count) + 1).toString().padStart(3, '0');
     return `${prefix}-${year}-${month}-${nextNumber}`;
-  } catch (e) {
+  } catch {
     return `${prefix}-${year}-${month}-001`;
   }
 }

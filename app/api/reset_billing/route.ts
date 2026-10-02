@@ -45,9 +45,9 @@ export async function POST(req: Request) {
     await query("DELETE FROM journal_entries WHERE reference_no LIKE 'INV%' OR reference_no LIKE 'QT%'");
 
     // 6. Reset sequences
-    try { await query('ALTER SEQUENCE quotations_id_seq RESTART WITH 1'); } catch (_) { }
-    try { await query('ALTER SEQUENCE invoices_id_seq RESTART WITH 1'); } catch (_) { }
-    try { await query('ALTER SEQUENCE quotation_items_id_seq RESTART WITH 1'); } catch (_) { }
+    try { await query('ALTER SEQUENCE quotations_id_seq RESTART WITH 1'); } catch { }
+    try { await query('ALTER SEQUENCE invoices_id_seq RESTART WITH 1'); } catch { }
+    try { await query('ALTER SEQUENCE quotation_items_id_seq RESTART WITH 1'); } catch { }
 
     console.log(`[AUDIT] Admin reset_billing completed for user: ${session.user.email}`);
 

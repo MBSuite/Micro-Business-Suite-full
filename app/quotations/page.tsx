@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { FileText, Plus, Search, ArrowRight, Edit, ShieldCheck, FileCheck } from "lucide-react";
+import { FileText, Plus, Search, FileCheck } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { formatDateDisplay } from "@/lib/dateFormatter";
@@ -30,7 +30,7 @@ export default async function QuotationsPage({ searchParams }: { searchParams: {
 
       const res = await query(q, params);
       quotations = res.rows;
-    } catch (joinError) {
+    } catch {
       // If contact_id doesn't exist, try without the join
       console.log('contact_id column missing, trying fallback query...');
       let fallbackQ = `SELECT q.*, null as customer_name FROM quotations q`;

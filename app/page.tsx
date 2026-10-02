@@ -8,23 +8,16 @@ import {
   Building2,
   Users,
   Receipt,
-  TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight,
   BarChart3,
   Settings,
   Plus,
   ArrowRight,
   ShieldCheck,
   Zap,
-  LayoutDashboard,
   Wallet,
   PieChart,
-  ArrowDownCircle,
-  ArrowUpCircle,
-  FileBadge,
   Calendar as CalendarIcon,
-  Bell
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

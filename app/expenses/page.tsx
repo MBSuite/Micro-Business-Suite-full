@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   AlertCircle,
   ArrowLeft,
-  Calendar,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -23,7 +22,7 @@ import {
   FileBadge,
   Globe,
 } from "lucide-react";
-import { formatDateDisplay, formatDateInput } from "@/lib/dateFormatter";
+import { formatDateDisplay } from "@/lib/dateFormatter";
 
 const SUPPORTED_CURRENCIES = [
   { code: "THB", label: "THB — บาทไทย", symbol: "฿" },

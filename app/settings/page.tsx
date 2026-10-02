@@ -21,7 +21,7 @@ async function getCompanyData() {
       google_client_secret_set: Boolean(row.google_client_secret),
       google_refresh_token_set: Boolean(row.google_refresh_token),
     };
-  } catch (e) {
+  } catch {
     return null;
   }
 }

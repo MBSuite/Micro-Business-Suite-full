@@ -3,13 +3,7 @@
 import { query } from "@/lib/db";
 import { getCompanySettings } from "@/lib/settings";
 import { revalidatePath } from "next/cache";
-import {
-  initializeRDClient,
-  submitInvoiceToRD,
-  submitWHTToRD,
-  checkRDSubmissionStatus,
-  batchSubmitToRD,
-} from "@/lib/rd-api";
+import { initializeRDClient, submitInvoiceToRD } from "@/lib/rd-api";
 
 export async function getTaxSummary() {
   try {
@@ -166,6 +160,8 @@ export async function exportPND53ToTxt(month: number, year: number): Promise<{ s
   } catch (err: any) { return { success: false, error: err.message }; }
 }
 
+// `type` stays in the signature because TaxExportButton passes it, but this stub ignores it.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function batchSubmitToRDPortal(ids: string[], type?: string): Promise<{ success: boolean; summary?: { successful: number; total: number }; results?: any[]; error?: string }> {
   return { success: true, summary: { successful: ids.length, total: ids.length } };
 }
@@ -187,7 +183,7 @@ export async function exportMonthlySummaryToDrive() {
     const { getOrCreateFolder } = await import("@/lib/actions-helpers");
     const { getGoogleSheets } = await import("@/lib/google-server");
     const googleSheets = await getGoogleSheets();
-    const folderId = await getOrCreateFolder("MBSuite Reports");
+    await getOrCreateFolder("MBSuite Reports");
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: { properties: { title: `Budget Summary ${now.getMonth() + 1}/${now.getFullYear()}` } }
     });

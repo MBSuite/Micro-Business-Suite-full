@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { createCategory, updateCategory, deleteCategory } from "@/app/actions";
-import { Plus, Trash2, Edit, Save, X, Layers, CheckCircle, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Plus, Trash2, Edit, X, Layers, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 export default function CategoryListClient({ initialCategories }: { initialCategories: any[] }) {

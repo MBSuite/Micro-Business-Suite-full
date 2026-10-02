@@ -29,7 +29,7 @@ async function getQuotation(id: string) {
     quotation.items = itemsRes.rows;
     
     return quotation;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

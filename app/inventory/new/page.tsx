@@ -3,18 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Save, 
-  Package, 
-  MapPin, 
-  Notebook, 
-  QrCode, 
-  Barcode as BarcodeIcon,
-  Zap,
-  Truck,
-  Coins
-} from "lucide-react";
+import { Save, Package, MapPin, Notebook, QrCode, Zap, Truck, Coins } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import BarcodeComponent from "react-barcode";
 import { createProduct, getNextSkuNumber, getCategories, createCategory } from "@/app/actions";

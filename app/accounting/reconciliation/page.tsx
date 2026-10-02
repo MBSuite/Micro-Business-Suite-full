@@ -10,19 +10,14 @@ import {
   RefreshCw,
   Scale,
   TrendingUp,
-  TrendingDown,
-  DollarSign,
   Calendar,
-  Filter,
-  Users,
   Building,
-  CreditCard
 } from "lucide-react";
 
 export default function ReconciliationPage() {
   const [reconciliations, setReconciliations] = useState<any[]>([]);
-  const [unreconciledEntries, setUnreconciledEntries] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setUnreconciledEntries] = useState<any[]>([]);
+  const [, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('current-month');
   const [filterStatus, setFilterStatus] = useState('all');
 

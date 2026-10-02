@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
     const dataLines = lines.slice(1);
     
     let imported = 0;

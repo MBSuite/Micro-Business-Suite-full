@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { updateQuotationStatus, deleteQuotation } from "@/app/actions";
 import { Edit, FileText, Trash2, CheckCircle, Send, XCircle, Loader2 } from "lucide-react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { useRouter } from 'next/navigation';
 
 export default function QuotationRowActions({ id, status }: { id: number, status: string }) {

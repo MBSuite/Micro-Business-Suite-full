@@ -41,3 +41,18 @@ Tracks meaningful behavior/architecture changes (not every small code diff).
 - Not covered: the `taxId`/`address` identity-mismatch branch of `InputTaxValidator`, which requires a real database. `InputTaxValidator` is still not called from any expense UI or action.
 - Backup encryption remains open: `scripts/auto-backup.mjs` gzips and uploads to Drive without encrypting the payload first. Owner paused this item for now; it must be revisited before production use because the archive contains customer data and bcrypt password hashes.
 
+
+## [2026-10-02]
+
+- `@typescript-eslint/no-unused-vars` cleared repository-wide: **159 → 0** across 68 files. Changes:
+  - Removed 93 unused imports (including 3 `.mjs` scripts where only side-effect imports remained)
+  - Removed 33 unused catch bindings (`catch (e)` → `catch`; 3 of these also removed `: any` types, reducing `@typescript-eslint/no-explicit-any` by 3 as a side effect)
+  - Deleted 14 dead local variables/functions (e.g., `getRecurringLabel` in `app/quotations/edit/[id]/EditQuotationClient.tsx`, local `monthNames` duplicates in `app/vouchers/page.tsx`)
+  - Converted 6 unused state slots to ignored form (`const [, setX]`) to preserve API/React patterns where setters were used; 2 unused params suppressed with a scoped `eslint-disable-next-line` for intentionally kept public signatures (`batchSubmitToRDPortal` and `compactInvoiceVoucherItems`)
+- Kept `folderId` assignments removed from `app/actions/google-drive.ts` and `app/actions/tax-reports.ts` while preserving `await getOrCreateFolder(...)` calls (side effect required).
+- Normalized import formatting for affected files only; did not globally rewrite unrelated line endings. `pnpm-lock.yaml` checksum updated due to `.pnpmfile.cjs` signature change.
+- Type-check: `pnpm exec tsc --noEmit` 0 errors. Tests: `pnpm test` 36/36 passing. Lint: 360 errors, 10 warnings (down from 532 problems). Consistency check: passed.
+
+## [2026-10-02 - cleanup]
+
+- Cleared `@typescript-eslint/no-unused-vars` across the repository (159 → 0) with targeted edits only: unused imports (93), unused catch bindings (33), dead locals (14), ignored state setters/values (6), two kept signatures suppressed via scoped eslint-disable. Total problems reduced 532 → 370 (360 errors, 10 warnings); the 3 `no-explicit-any` reductions were side effects of `catch (error: any)` → `catch`. All checks green (tsc 0, tests 36/36, consistency passed).

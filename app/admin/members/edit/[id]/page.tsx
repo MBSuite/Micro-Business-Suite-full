@@ -10,7 +10,7 @@ async function getUser(id: string) {
     const user = res.rows[0];
     if (!user || user.email === undefined) throw new Error("Schema mismatch or not found");
     return user;
-  } catch (e) {
+  } catch {
     // Return dummy data if DB not setup
     if (id === '1') return { id: 1, name: "Administrator", email: "admin@your-company.com", role: "superadmin", status: "Active" };
     if (id === '2') return { id: 2, name: "Urasaya Pruksanusak", email: "urasayap@gmail.com", role: "admin", status: "Active" };

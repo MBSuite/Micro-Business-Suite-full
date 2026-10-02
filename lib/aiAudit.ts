@@ -107,7 +107,7 @@ async function checkUnbalancedJournals(): Promise<AuditFinding[]> {
         dedup_key: `journal-unbalanced-${r.reference_no}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -136,7 +136,7 @@ async function checkVatMismatch(): Promise<AuditFinding[]> {
         dedup_key: `vat-mismatch-inv-${r.id}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -166,7 +166,7 @@ async function checkOverdueInvoices(): Promise<AuditFinding[]> {
         dedup_key: `overdue-inv-${r.id}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -191,7 +191,7 @@ async function checkForbiddenExpenseCategory(): Promise<AuditFinding[]> {
         });
       }
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -218,7 +218,7 @@ async function checkTaxDeductibleWithoutReceipt(): Promise<AuditFinding[]> {
         dedup_key: `no-receipt-exp-${r.id}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -246,7 +246,7 @@ async function checkVendorsWithNoWht(): Promise<AuditFinding[]> {
         dedup_key: `no-wht-voucher-${r.id}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -268,7 +268,7 @@ async function checkNegativeMargin(): Promise<AuditFinding[]> {
         });
       }
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 
@@ -289,7 +289,7 @@ async function checkTaxDeadlines(): Promise<AuditFinding[]> {
         dedup_key: `tax-deadline-${todayKey}-${isAnnual ? "51" : "general"}`,
       });
     }
-  } catch (e) {}
+  } catch {}
   return findings;
 }
 

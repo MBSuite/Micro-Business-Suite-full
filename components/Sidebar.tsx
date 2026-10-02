@@ -4,20 +4,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, 
-  FileText, 
-  Receipt, 
-  CreditCard, 
-  Package, 
-  Users, 
-  BarChart3, 
+  Home,
+  FileText,
+  Receipt,
+  CreditCard,
+  Package,
+  Users,
+  BarChart3,
   Settings,
   LogOut,
   ChevronLeft,
   Menu,
   ShieldCheck,
   UserCog,
-  Repeat,
   BookOpen,
   ShoppingCart,
   Wallet,
@@ -25,17 +24,14 @@ import {
   Banknote,
   Library,
   X,
-  User,
   Zap,
-  FileBadge,
   PieChart,
   Database,
-  Users2,
   Briefcase,
   Bell,
   AlertOctagon,
   Server,
-  Globe
+  Globe,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";

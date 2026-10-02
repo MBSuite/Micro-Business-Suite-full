@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { isAdmin, isSuperAdmin, logActivity, clearPermissionCache } from "@/lib/permissions";
+import { isAdmin, logActivity } from "@/lib/permissions";
 
 // GET /api/groups - List all groups with permission counts and member counts
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
     

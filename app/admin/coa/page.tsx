@@ -2,7 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Book, Search, ShieldCheck, Tag, Info, AlertCircle, Plus, Edit2, Trash2, X, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Book,
+  Search,
+  ShieldCheck,
+  Tag,
+  Info,
+  Plus,
+  Edit2,
+  Trash2,
+  X,
+  CheckCircle,
+} from "lucide-react";
 import { getAccounts, createAccount, updateAccount, deleteAccount } from "@/app/actions";
 import { cn } from "@/lib/utils";
 

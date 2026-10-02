@@ -136,7 +136,6 @@ export async function calculateProfitLoss(
       // Revenue accounts (credits to revenue accounts)
       if (creditType === 'revenue') {
         const accountCode = entry.credit_account_id;
-        const accountName = entry.credit_account_name;
         
         plSummary.revenue.totalRevenue += amount;
         revenueMap.set(accountCode, (revenueMap.get(accountCode) || 0) + amount);
@@ -156,7 +155,6 @@ export async function calculateProfitLoss(
       // Expense accounts (debits to expense accounts)
       if (debitType === 'expense') {
         const accountCode = entry.debit_account_id;
-        const accountName = entry.debit_account_name;
         
         plSummary.expenses.totalExpenses += amount;
         expenseMap.set(accountCode, (expenseMap.get(accountCode) || 0) + amount);
@@ -255,7 +253,7 @@ async function getAccountName(accountCode: string): Promise<string> {
       [accountCode]
     );
     return rows[0]?.account_name_th || `Account ${accountCode}`;
-  } catch (error) {
+  } catch {
     return `Account ${accountCode}`;
   }
 }

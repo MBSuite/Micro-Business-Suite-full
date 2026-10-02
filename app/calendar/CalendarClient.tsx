@@ -1,17 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  Trash2, 
-  CheckCircle,
-  Clock,
-  Bell,
-  X,
-  Loader2
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createReminder, updateReminderStatus, deleteReminder } from "@/app/actions";
 import { useRouter } from "next/navigation";

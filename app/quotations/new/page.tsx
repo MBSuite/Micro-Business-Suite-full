@@ -2,17 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Save,
-  Plus,
-  Trash2,
-  Calendar,
-  FileText,
-  User,
-  Zap,
-  ChevronRight,
-} from "lucide-react";
+import { Save, Plus, Trash2, Calendar, FileText, User, Zap } from "lucide-react";
 
 type Contact = {
   id: number;
@@ -83,7 +73,7 @@ export default function NewQuotationPage() {
       try {
         const res = await getNextQuotationNumber();
         if (res.success) setDocNo(res.data);
-      } catch (err) {}
+      } catch {}
     };
     loadContacts();
     loadProducts();

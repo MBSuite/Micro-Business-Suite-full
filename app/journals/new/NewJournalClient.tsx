@@ -2,7 +2,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookOpen, Save, ChevronRight, Plus, Trash2, ArrowRightLeft, Paperclip, ShoppingCart, Wallet, Truck, Banknote, Library } from "lucide-react";
+import {
+  Save,
+  ChevronRight,
+  Plus,
+  Trash2,
+  ArrowRightLeft,
+  Paperclip,
+  ShoppingCart,
+  Wallet,
+  Truck,
+  Banknote,
+  Library,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -27,7 +39,7 @@ export default function NewJournalClient() {
   const [referenceNo, setReferenceNo] = useState("");
   const [description, setDescription] = useState("");
   const [receiptUrl, setReceiptUrl] = useState("");
-  const [receiptFileName, setReceiptFileName] = useState("");
+  const [, setReceiptFileName] = useState("");
   
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [activeSearchLine, setActiveSearchLine] = useState<number | null>(null);

@@ -2,20 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { 
-  Shield, 
-  Plus, 
-  Users, 
-  Edit2, 
-  Trash2, 
-  CheckCircle2, 
-  X,
-  ChevronDown,
-  ChevronRight,
-  Lock,
-  Eye,
-  Save
-} from "lucide-react";
+import { Shield, Plus, Users, Edit2, Trash2, CheckCircle2, X, Lock, Eye, Save } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ToastProvider";
 import { getPermissionModules } from "@/lib/module-registry";

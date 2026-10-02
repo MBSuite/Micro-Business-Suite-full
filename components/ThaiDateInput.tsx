@@ -22,7 +22,6 @@ export default function ThaiDateInput({
   showLabel = true,
 }: ThaiDateInputProps) {
   const [inputValue, setInputValue] = useState(value ? formatDateDisplay(value) : "");
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;

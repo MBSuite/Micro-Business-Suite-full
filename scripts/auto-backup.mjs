@@ -1,8 +1,6 @@
-import fs from "node:fs";
 import zlib from "node:zlib";
-import path from "node:path";
 import { Readable } from "node:stream";
-import { dbPool, googleAuth, drive, root } from "./google-auth.mjs";
+import { dbPool, googleAuth, drive } from "./google-auth.mjs";
 
 const BACKUP_DIR = "Backup-Auto";
 const KEEP_DAYS = 30;

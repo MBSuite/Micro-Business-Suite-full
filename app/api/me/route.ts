@@ -17,7 +17,7 @@ export async function GET() {
         role: session.user.role,
       }
     });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to get user" }, { status: 500 });
   }
 }

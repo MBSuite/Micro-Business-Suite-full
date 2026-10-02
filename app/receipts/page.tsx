@@ -3,16 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDateDisplay } from "@/lib/dateFormatter";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  CreditCard,
-  FileText,
-  Plus,
-  Receipt,
-  Search,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileText, Plus, Receipt, Search, Users } from "lucide-react";
 
 export default function ReceiptsPage() {
   const [receipts, setReceipts] = useState<any[]>([]);

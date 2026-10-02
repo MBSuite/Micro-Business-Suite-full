@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   Save,
   Plus,
   Trash2,
@@ -24,24 +23,11 @@ export default function EditQuotationClient({ quotation }: { quotation: any }) {
   const [status, setStatus] = useState(quotation.status || "draft");
   const [notes, setNotes] = useState(quotation.notes || "");
   const [isSaving, setIsSaving] = useState(false);
-  const [includeVat, setIncludeVat] = useState(true);
+  const [includeVat] = useState(true);
   const [isRecurring, setIsRecurring] = useState(quotation.is_recurring || false);
   const [recurringInterval, setRecurringInterval] = useState(quotation.recurring_interval || "monthly");
 
-  const thaiMonths = [
-    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-  ];
   
-  const getRecurringLabel = () => {
-    if (!isRecurring) return "";
-    const now = new Date();
-    if (recurringInterval === "monthly") {
-      return `(ประจำเดือน ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543})`;
-    }
-    return `(ประจำปี ${now.getFullYear() + 543})`;
-  };
-
   useEffect(() => {
     // Load existing items
     if (quotation.items) {
@@ -59,7 +45,7 @@ export default function EditQuotationClient({ quotation }: { quotation: any }) {
       try {
         const res = await getProducts();
         if (res.success) setProducts(res.data ?? []);
-      } catch (err) {}
+      } catch {}
     };
     loadProducts();
   }, [quotation]);

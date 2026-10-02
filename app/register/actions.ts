@@ -1,8 +1,7 @@
 "use server";
 
 import { query, withTransaction } from "@/lib/db";
-import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
+import bcrypt from "bcryptjs";
 import { checkUserLimit, getDefaultCompanyId } from "@/lib/auth";
 import { resolveRegistrationAccess } from "@/lib/registration-bootstrap.mjs";
 

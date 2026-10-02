@@ -1,8 +1,7 @@
 
 import { query } from "@/lib/db";
-import { Users, Plus, Mail, Phone, MapPin, ArrowRight, UserCheck, Edit, ShieldCheck, Heart, Search } from "lucide-react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { Users, Plus, Mail, Phone, MapPin, ArrowRight, Edit, Heart, Search } from "lucide-react";
+import Link from "next/link";
 import { normalizeContactType } from "@/lib/contacts";
 
 export const dynamic = 'force-dynamic';
@@ -86,7 +85,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: { s
 
         {/* Contacts Gallery Grid */}
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {contacts.length > 0 ? contacts.map((contact: any, i: number) => (
+          {contacts.length > 0 ? contacts.map((contact: any) => (
             <div key={contact.id} className="bg-white rounded-3xl shadow-sm border border-violet-50 hover:shadow-2xl hover:-translate-y-2 transition-all group overflow-hidden relative">
                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-50/30 rounded-full translate-x-12 -translate-y-12 group-hover:scale-150 transition-transform duration-700"></div>
                

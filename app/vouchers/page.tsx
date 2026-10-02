@@ -5,16 +5,13 @@ import {
   ScrollText,
   Plus,
   Printer,
-  CheckCircle2,
   Calendar,
   BookOpen,
   Search,
-  FileText,
-  Download,
   ChevronLeft,
   ChevronRight,
   Filter,
-  X
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -52,7 +49,6 @@ export default function PaymentVouchersPage() {
   const [search, setSearch] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  const [showSummary, setShowSummary] = useState(false);
   const [viewMode, setViewMode] = useState<"all" | "monthly">("all");
 
   // Calculate monthly summaries
@@ -128,7 +124,7 @@ export default function PaymentVouchersPage() {
         const data = await res.json();
         setVouchers(data.vouchers || []);
       }
-    } catch (e) {
+    } catch {
       console.error('Failed to fetch vouchers');
     } finally {
       setLoading(false);
@@ -408,8 +404,6 @@ export default function PaymentVouchersPage() {
     const totalWht = vouchersToPrint.reduce((sum, v) => sum + Number(v.wht_amount || 0), 0);
     const netPayment = vouchersToPrint.reduce((sum, v) => sum + Number(v.net_payment || v.amount || 0), 0);
 
-    const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
     const summary = selectedMonth !== null ? monthlySummaries.find(s => s.month === selectedMonth && s.year === selectedYear) : null;
     const periodText = summary
       ? `เดือน${summary.monthName} ${summary.year + 543}`

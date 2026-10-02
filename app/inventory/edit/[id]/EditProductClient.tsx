@@ -1,15 +1,6 @@
 "use client";
 
-import { 
-  Package, 
-  Save, 
-  MapPin, 
-  Notebook, 
-  Truck,
-  ChevronRight,
-  Barcode as BarcodeIcon,
-  Layers
-} from "lucide-react";
+import { Package, Save, MapPin, Notebook, Truck, ChevronRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { updateProduct } from "@/app/actions";

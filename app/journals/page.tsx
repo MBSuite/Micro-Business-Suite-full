@@ -2,7 +2,18 @@
 import { query } from "@/lib/db";
 import { expandJournalRowsForPresentation, getEffectiveJournalReference } from "@/lib/journaling";
 import { formatDateDisplay } from "@/lib/dateFormatter";
-import { BookOpen, Plus, Calendar, ShoppingCart, Wallet, Truck, Banknote, Library, AlertCircle, Search } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Calendar,
+  ShoppingCart,
+  Wallet,
+  Truck,
+  Banknote,
+  Library,
+  AlertCircle,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import JournalEntryRow from "./JournalEntryRow";
@@ -33,6 +44,7 @@ function normalizeJournalType(entry: any) {
 // Deprecated local helper:
 // invoice compaction moved to lib/journaling.ts as the shared single-source presenter.
 // Keep this block untouched during the encoding cleanup window; it is no longer called.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function compactInvoiceVoucherItems(items: any[]) {
   if (items.length === 0) return items;
   if (!items.every((item) => String(item.reference_no || "").toUpperCase().startsWith("INV"))) {

@@ -1,7 +1,7 @@
 
 import { query } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { Receipt, Plus, Search, FileText, ArrowLeft, ArrowRight, Edit, Filter, ShieldCheck } from "lucide-react";
+import { Receipt, Plus, Search, Filter, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import InvoiceRowActions from "./InvoiceRowActions";
 import { cn } from "@/lib/utils";

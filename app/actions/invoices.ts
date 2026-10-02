@@ -29,7 +29,7 @@ export async function getNextInvoiceNumber() {
     if (rows.length === 0) return { success: true, data: `${prefix}001` };
     const lastNum = parseInt(rows[0].invoice_number.replace(prefix, ""), 10);
     return { success: true, data: `${prefix}${String(isNaN(lastNum) ? 1 : lastNum + 1).padStart(3, "0")}` };
-  } catch (error: any) {
+  } catch {
     return { success: true, data: `${prefix}001` };
   }
 }

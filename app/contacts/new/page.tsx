@@ -2,20 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Save, 
-  Users, 
+import {
+  Save,
+  Users,
   UserPlus,
-  Mail, 
-  Phone, 
-  MapPin, 
+  Mail,
+  Phone,
   ChevronRight,
   ShieldCheck,
   Building2,
-  Globe,
-  CreditCard,
-  Hash
+  Hash,
 } from "lucide-react";
 import { createContact } from "@/app/actions";
 import { useRouter } from "next/navigation";

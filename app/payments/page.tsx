@@ -38,7 +38,7 @@ export default function PaymentsPage() {
         const data = await res.json();
         setUserRole(data.user?.role || null);
       }
-    } catch (e) {
+    } catch {
       console.error('Failed to fetch user role');
     }
   };
@@ -63,13 +63,9 @@ export default function PaymentsPage() {
       if (res.ok) {
         setPayments(payments.filter(p => p.id !== id));
       }
-    } catch (e) {
+    } catch {
       alert('ลบไม่สำเร็จ');
     }
-  };
-
-  const handlePrint = (payment: Payment) => {
-    window.open(`/payments/print/${payment.id}`, '_blank');
   };
 
   return (

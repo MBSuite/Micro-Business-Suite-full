@@ -54,7 +54,7 @@ async function ensureCompanyLicensingSchema() {
       ALTER TABLE users
       ADD COLUMN IF NOT EXISTS company_id INTEGER
     `);
-  } catch (e) {
+  } catch {
     // users table may not exist yet, ignore
   }
 

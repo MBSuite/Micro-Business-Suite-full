@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { ArrowLeft, FileSignature } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDateDisplay } from "@/lib/dateFormatter";
@@ -25,7 +25,7 @@ async function getInvoiceData(id: string) {
     const company = companyRes.rows[0] || {};
 
     return { invoice, company };
-  } catch (error) {
+  } catch {
     return null;
   }
 }

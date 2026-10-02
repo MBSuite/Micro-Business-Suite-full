@@ -37,5 +37,5 @@ export async function ensureContactsSchema() {
       END
       WHERE contact_type IS NULL OR contact_type = ''
     `);
-  } catch (e) {}
+  } catch {}
 }

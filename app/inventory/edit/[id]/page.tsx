@@ -8,7 +8,7 @@ async function getProduct(id: string) {
   try {
     const res = await query('SELECT * FROM products WHERE id = $1', [id]);
     return res.rows[0];
-  } catch (e) {
+  } catch {
     return null;
   }
 }

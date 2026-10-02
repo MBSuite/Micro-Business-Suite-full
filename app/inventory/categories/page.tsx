@@ -1,6 +1,6 @@
 
 import { getCategories } from "@/app/actions";
-import { FolderTree, Plus, ArrowLeft, Layers } from "lucide-react";
+import { FolderTree, ArrowLeft, Layers } from "lucide-react";
 import Link from "next/link";
 import CategoryListClient from "./CategoryListClient";
 

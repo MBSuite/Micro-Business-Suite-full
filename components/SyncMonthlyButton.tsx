@@ -20,7 +20,7 @@ export default function SyncMonthlyButton() {
         alert("Error: " + res.error);
         setStatus("error");
       }
-    } catch (err) {
+    } catch {
       setStatus("error");
     }
   };

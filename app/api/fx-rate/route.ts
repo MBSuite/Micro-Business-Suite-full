@@ -31,7 +31,6 @@ export async function GET() {
     ]);
 
     const rates = series.length ? series : [latest];
-    const oldest = rates[0].rate;
     const newest = rates[rates.length - 1].rate;
     const monthAgo = rates[0].rate ?? latest.rate;
     const change1m = parseFloat((newest - monthAgo).toFixed(4));

@@ -761,8 +761,16 @@ README และ env instructions ได้รับการแก้ให้�
 - `pnpm exec tsc --noEmit` ณ 2026-10-02: **สะอาด 0 errors** (เดิม 17 errors — ลบ `tests/taxAutomator.test.ts` ตามดู 7.6.1)
 - `pnpm test` ณ 2026-10-02: **36 passed** — `tests/**/*.test.mjs` 4 ไฟล์ + `tests/taxAutomator.test.mts` (เพิ่มใหม่ ดู 7.6.2)
   สคริปต์เปลี่ยนเป็น `node --import tsx --test tests/**/*.test.mjs tests/**/*.test.mts`
-- `pnpm lint` ณ 2026-10-02: **363 errors, 169 warnings** — ยังไม่ได้แก้ ต้องตัดสินใจว่าจะลด scope หรือทยอยแก้
-  (ไฟล์เทสต์ใหม่ lint สะอาด 0 warnings ตัวเลขรวมไม่เปลี่ยน)
+- `pnpm lint` ณ 2026-10-02 (รอบ `no-unused-vars`): **360 errors, 10 warnings**
+  - `@typescript-eslint/no-unused-vars` แก้ครบ **159 → 0** จุดใน 67 ไฟล์ (ดู 7.5.8)
+  - ลดลงรวม 162 จุดจากเดิม 363 errors + 169 warnings = 532
+    (159 warnings ของ `no-unused-vars` และอีก 3 errors ของ `no-explicit-any` ที่หายไปพร้อมกัน
+    เพราะเปลี่ยน `catch (error: any)` เป็น `catch`)
+  - กฎที่เหลือยังไม่ได้แก้ ต้องตัดสินใจทีละกฎ: `@typescript-eslint/no-explicit-any` 316,
+    `react-hooks/set-state-in-effect` 18, `react/no-unescaped-entities` 12,
+    `react-hooks/immutability` 10, `react-hooks/exhaustive-deps` 8,
+    `react-hooks/purity` 2, `@next/next/no-img-element` 2, `prefer-const` 1,
+    `@next/next/no-html-link-for-pages` 1
 
 #### 7.5.6 Lazy migration ขัดกับนโยบายตัวเอง
 
@@ -783,6 +791,36 @@ commit 3 ชุดเดียวกันถูกสร้างเป็น 2
 > ต่างกันจุดเดียว: `gitea/main` ยังเก็บไฟล์ว่าง 4 ไฟล์ที่ root (`micro-account@0.1.0`, `next`, `psql`, `rmdir`)
 > ซึ่งถูกลบใน `93b97d1` — ถ้า merge `main` กลับเข้ามาเมื่อไร ไฟล์เหล่านี้จะกลับมาต้องลบซ้ำ
 > ที่มาของไฟล์: คำสั่งลบที่ redirect ผิดทางจึงสร้างไฟล์เปล่าแทนที่จะลบ — ควรใช้ `rm` ที่ quote path เสมอ
+
+#### 7.5.8 ✅ `@typescript-eslint/no-unused-vars` แก้ครบ 159 → 0
+
+แก้เฉพาะกฎนี้ ไม่แตะ `@typescript-eslint/no-explicit-any` (316) และกฎอื่น — 68 ไฟล์
+
+| หมวด | จำนวน | วิธีแก้ |
+|---|---|---|
+| catch binding | 33 | `catch (e)` → `catch` (รวม `catch (error: any)` 3 จุด ทำให้ `no-explicit-any` ลด 3 ตามผลข้างเคียง) |
+| unused import | 93 | ลบชื่อออกจาก `import { ... }` ทุกตัว รวมไฟล์ `.mjs`/`.cjs` ที่ `tsc` ไม่ตรวจ |
+| dead local | 14 | ลบตัวแปร/ฟังก์ชันที่ไม่มีผู้เรียกจริง |
+| unused state | 6 | คง API เดิม: ค่าที่ไม่ใช้แต่ setter ใช้ → `const [, setX]` / setter ที่ไม่ใช้แต่ค่าใช้ → `const [x]` |
+| unused param | 2 | ตัดพารามิเตอร์ที่ไม่มีผู้ส่ง |
+
+**2 จุดที่ตั้งใจไม่ลบ ใช้ `eslint-disable-next-line` แทน:**
+
+- `app/actions/tax-reports.ts` — `batchSubmitToRDPortal(ids, type?)`: `type` อยู่ใน public signature
+  เพราะ `TaxExportButton.tsx` ส่งมา แต่ stub นี้ไม่ได้ใช้
+- `app/journals/page.tsx` — `compactInvoiceVoucherItems`: มี comment "Keep this block untouched during
+  encoding cleanup window" จึงเก็บไว้ (สำเนาที่ใช้งานจริงอยู่ที่ `lib/journaling.ts:211`)
+
+**2 จุดที่ระวังไม่ให้เสีย side effect:** `folderId` ที่ lint มองว่าไม่ถูกใช้ ใน `app/actions/google-drive.ts`
+และ `app/actions/tax-reports.ts` ถูกลบเฉพาะการ assign แต่คง `await getOrCreateFolder(...)` ไว้ เพราะการเรียก
+ฟังก์ชันคือผลข้างเคียงที่ต้องเกิด
+
+**หมายเหตุ line ending:** repository มีไฟล์ผสม CRLF/LF อยู่ก่อนแล้ว รวมถึง `components/Sidebar.tsx`
+ที่บรรทัดปิด import ลงท้ายด้วย LF ทั้งที่ทั้งไฟล์เป็น CRLF — รอบนี้ normalize เฉพาะบล็อก import ที่แตะ
+ให้เป็น CRLF ตามบรรทัดข้างเคียง ไม่ได้แตะไฟล์อื่นที่ไม่เกี่ยวข้อง
+
+`.pnpmfile.cjs` เปลี่ยน `readPackage(pkg, context)` → `readPackage(pkg)` ทำให้ `pnpm-lock.yaml`
+เปลี่ยน `pnpmfileChecksum` ตามธรรมชาติ — เป็นผลที่ถูกต้อง ไม่ใช่การแก้ lockfile เปล่า ๆ
 
 ### 7.6 ✅ แก้แล้ว — ปิดรายการที่ตัดสินใจแล้ว
 

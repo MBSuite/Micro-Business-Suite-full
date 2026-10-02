@@ -3,16 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  UserCog, 
-  Save, 
-  ChevronRight,
-  ShieldCheck,
-  Mail,
-  User,
-  Key,
-  ArrowLeft
-} from "lucide-react";
+import { Save, ShieldCheck, User, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ToastProvider"; // Use our custom hook
 import { updateUserAction } from "../../actions";
 import { normalizeRole } from "@/lib/core-standards";

@@ -2,12 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle2, Hash, Loader2, Plus, Save, ShoppingBag, Trash2, User } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  CheckCircle2,
+  Hash,
+  Loader2,
+  Plus,
+  Save,
+  ShoppingBag,
+  Trash2,
+  User,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   createContact,
   createInvoice,
-  createJournalEntry,
   getCompanySettings,
   getContacts,
   getNextInvoiceNumber,

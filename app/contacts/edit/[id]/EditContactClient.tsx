@@ -1,17 +1,14 @@
 "use client";
 
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
+import {
+  Building2,
+  Mail,
+  Phone,
   ChevronRight,
   Save,
-  Globe,
   ShieldCheck,
-  CreditCard,
   Hash,
-  ArrowLeft,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

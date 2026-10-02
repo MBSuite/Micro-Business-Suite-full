@@ -102,7 +102,7 @@ export async function exportVouchersToSheets() {
     const res = await query('SELECT * FROM payment_vouchers ORDER BY issue_date DESC, id ASC');
     const vouchers = res.rows;
     if (vouchers.length === 0) throw new Error("No data");
-    const folderId = await getOrCreateFolder('MBSuite Reports');
+    await getOrCreateFolder('MBSuite Reports');
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: { properties: { title: `Voucher Report ${new Date().toLocaleDateString('th-TH')}` } }
     });

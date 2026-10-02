@@ -1,7 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { ShieldCheck, Bot, X, CheckCircle, RefreshCw, AlertTriangle, Info, AlertOctagon } from "lucide-react";
+import {
+  ShieldCheck,
+  Bot,
+  CheckCircle,
+  RefreshCw,
+  AlertTriangle,
+  Info,
+  AlertOctagon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AiAlert {
@@ -63,7 +71,7 @@ export default function AiAdvisorWidget({ compact = false }: { compact?: boolean
     try {
       const res = await axios.get("/api/ai/audit");
       setAlerts(res.data.alerts || []);
-    } catch (err) {
+    } catch {
       setAlerts([]);
     } finally {
       setLoading(false);
@@ -75,7 +83,7 @@ export default function AiAdvisorWidget({ compact = false }: { compact?: boolean
     try {
       await axios.post("/api/ai/audit", {});
       await load();
-    } catch (err) {
+    } catch {
       // ignore
     } finally {
       setRunning(false);
@@ -86,7 +94,7 @@ export default function AiAdvisorWidget({ compact = false }: { compact?: boolean
     try {
       await axios.post("/api/ai/audit", { action: "resolve", alertId: id });
       setAlerts((prev) => prev.filter((a) => a.id !== id));
-    } catch (err) {
+    } catch {
       // ignore
     }
   };

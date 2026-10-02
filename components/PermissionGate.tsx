@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { checkPermission, getUserPermissions, type PermissionAction, type ModuleName } from "@/lib/permissions";
+import { type PermissionAction, type ModuleName } from "@/lib/permissions";
 
 // Permission context
 interface PermissionContextType {

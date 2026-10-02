@@ -41,7 +41,7 @@ export async function getNextQuotationNumber() {
     }
     
     return { success: true, data: `${prefix}001` };
-  } catch (error: any) {
+  } catch {
     return { success: true, data: `${prefix}001` };
   }
 }

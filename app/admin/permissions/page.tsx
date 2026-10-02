@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ShieldCheck, Lock, Users, CheckCircle2, ArrowRight, AlertCircle } from "lucide-react";
+import { ShieldCheck, Lock, CheckCircle2, ArrowRight, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 type Group = {

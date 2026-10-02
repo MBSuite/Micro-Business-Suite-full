@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, X, ExternalLink, FileText, Tag, Banknote, CheckCircle2 } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  X,
+  ExternalLink,
+  FileText,
+  Tag,
+  Banknote,
+  CheckCircle2,
+} from "lucide-react";
 import { deleteJournalEntry, updateJournalEntry } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -27,11 +36,11 @@ export default function JournalEntryRow({ entry }: { entry: JournalEntry }) {
 
   const [accountName, setAccountName] = useState(entry.account_name);
   const [description, setDescription] = useState(entry.description);
-  const [referenceNo, setReferenceNo] = useState(entry.reference_no || "");
+  const [referenceNo] = useState(entry.reference_no || "");
   const [amount, setAmount] = useState(
     String(Number(entry.debit) > 0 ? entry.debit : entry.credit)
   );
-  const [entryDate, setEntryDate] = useState(
+  const [entryDate] = useState(
     entry.entry_date ? new Date(entry.entry_date).toISOString().split("T")[0] : ""
   );
 

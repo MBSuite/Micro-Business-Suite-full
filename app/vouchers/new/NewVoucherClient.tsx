@@ -2,20 +2,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  ScrollText, 
-  Save, 
-  ChevronRight, 
-  Plus, 
-  Trash2, 
-  ArrowRightLeft, 
-  Paperclip, 
-  User, 
-  Calendar, 
+import {
+  ScrollText,
+  Save,
+  ChevronRight,
+  Plus,
+  Paperclip,
+  User,
+  Calendar,
   CreditCard,
   Banknote,
   DollarSign,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,7 +45,7 @@ export default function NewVoucherClient() {
   const [whtRate, setWhtRate] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("Bank Transfer");
   const [receiptUrl, setReceiptUrl] = useState("");
-  const [receiptFileName, setReceiptFileName] = useState("");
+  const [, setReceiptFileName] = useState("");
 
   // Calculate WHT
   const amountNum = Number(amount) || 0;

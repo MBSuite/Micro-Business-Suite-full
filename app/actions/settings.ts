@@ -67,7 +67,7 @@ export async function getNextReferenceNo(type: string) {
     const result = `${prefix}-${year}-${String(month).padStart(2, '0')}-${nextNum}`;
     
     return { success: true, data: result };
-  } catch (error: any) {
+  } catch {
     const fallback = `${type.toUpperCase().substring(0, 2)}-${new Date().getFullYear()}-001`;
     return { success: true, data: fallback };
   }
