@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 
 // Optimized Pool สำหรับ Vercel Serverless + Neon Database
 // - max: จำกัดสูงสุด 3 connections (Serverless ควรน้อย ไม่ต้องเยอะ)
@@ -35,6 +35,31 @@ const pool = new Pool({
 export const query = async (text: string, params?: any[]) => {
   const res = await pool.query(text, params);
   return res;
+};
+
+// Run a set of statements on one dedicated connection so BEGIN/COMMIT/ROLLBACK
+// are guaranteed to run on the same session. pool.query() checks out an
+// arbitrary connection per call, so issuing them through `query` does NOT
+// guarantee a real transaction.
+export const withTransaction = async <T>(
+  fn: (client: PoolClient) => Promise<T>
+): Promise<T> => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // ignore rollback failure; surface the original error
+    }
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 export default pool;

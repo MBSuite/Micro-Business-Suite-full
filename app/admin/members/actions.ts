@@ -3,12 +3,8 @@
 import { query } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
-import { auth, checkUserLimit, getUserCompanyId } from "@/lib/auth";
-import { canAccessAdmin, normalizeRole } from "@/lib/core-standards";
-
-function hasMemberAdminAccess(role?: string | null) {
-  return canAccessAdmin(role);
-}
+import { requireAdmin, checkUserLimit, getUserCompanyId } from "@/lib/auth";
+import { normalizeRole } from "@/lib/core-standards";
 
 export async function createUserAction(data: {
   name: string;
@@ -18,9 +14,10 @@ export async function createUserAction(data: {
   status: string;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user || !hasMemberAdminAccess((session.user as any).role)) {
-      return { success: false, error: "Unauthorized: admin access required" };
+    // Verify the caller's CURRENT role from the DB (not the JWT claim).
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return { success: false, error: gate.error };
     }
 
     if (!data.name || !data.email || !data.password) {
@@ -31,9 +28,9 @@ export async function createUserAction(data: {
       return { success: false, error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
     }
 
-    const companyId = await getUserCompanyId((session.user as any).id);
+    const companyId = await getUserCompanyId(gate.user.id);
     // superadmin bypasses user seat limit
-    const isSuperAdmin = normalizeRole((session.user as any).role) === "superadmin";
+    const isSuperAdmin = normalizeRole(gate.user.role) === "superadmin";
     if (!isSuperAdmin) {
       const seatCheck = await checkUserLimit(companyId);
       if (!seatCheck.allowed) {
@@ -68,9 +65,10 @@ export async function createUserAction(data: {
 
 export async function updateUserAction(id: string, data: { name: string, email: string, role: string, status: string }) {
   try {
-    const session = await auth();
-    if (!session?.user || !hasMemberAdminAccess((session.user as any).role)) {
-      return { success: false, error: "Unauthorized: admin access required" };
+    // Verify the caller's CURRENT role from the DB (not the JWT claim).
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return { success: false, error: gate.error };
     }
 
     // 1. Update the user in the database

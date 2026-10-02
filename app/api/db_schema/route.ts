@@ -1,8 +1,15 @@
 import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
   try {
+    // Schema metadata is reconnaissance surface — restrict to admins.
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return NextResponse.json({ error: gate.error }, { status: gate.status });
+    }
+
     const { rows } = await query(
       "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'invoices'"
     );

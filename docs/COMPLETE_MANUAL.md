@@ -1,4 +1,4 @@
-# 📘 คู่มือการใช้งาน Micro Business Suite ฉบับสมบูรณ์
+# 📘 คู่มือการใช้งาน MBSuite ฉบับสมบูรณ์
 ## ระบบบัญชีอัจฉริยะสำหรับธุรกิจยุคใหม่
 
 ---
@@ -36,7 +36,7 @@
 ## 1. ภาพรวมระบบ
 
 ### 🎯 ระบบจัดการสิทธิ์ (RBAC)
-Micro Business Suite ใช้ระบบ **Role-Based Access Control (RBAC)** ที่มีความละเอียดถึง 6 ระดับ:
+MBSuite ใช้ระบบ **Role-Based Access Control (RBAC)** ที่มีความละเอียดถึง 6 ระดับ:
 - **Create** - สร้าง/เพิ่มข้อมูล
 - **Read** - อ่าน/ดูข้อมูล
 - **Update** - แก้ไขข้อมูล
@@ -469,8 +469,8 @@ Micro Business Suite ใช้ระบบ **Role-Based Access Control (RBAC)** 
 
 ---
 
-© 2026 Micro Business Suite
-**Micro Business Suite** - ระบบบัญชีอัจฉริยะ
+© 2026 MBSuite
+**MBSuite** - ระบบบัญชีอัจฉริยะ
 ---
 
 ## 8. Invoice Journal Stability Rules

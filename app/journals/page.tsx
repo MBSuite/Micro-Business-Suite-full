@@ -416,7 +416,7 @@ export default async function JournalsPage({ searchParams }: { searchParams: { t
 
         {/* Brand Footer */}
         <div className="text-center py-10 opacity-40">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.6em]">Micro Business Suite • Autonomous Logistics Edge • 2026</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.6em]">MBSuite • Autonomous Logistics Edge • 2026</p>
         </div>
 
       </div>

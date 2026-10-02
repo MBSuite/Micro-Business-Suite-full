@@ -225,7 +225,7 @@ export default function BackupPage() {
         </div>
 
         <div className="text-center mt-20 opacity-20 hover:opacity-100 transition-opacity">
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">System Recovery Console • Micro Business Suite 2026</p>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">System Recovery Console • MBSuite 2026</p>
         </div>
       </div>
     </main>

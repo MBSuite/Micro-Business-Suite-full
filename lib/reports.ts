@@ -1,7 +1,7 @@
 // =====================================================
-// Micro Business Suite: P&L Calculation Helper
+// MBSuite: P&L Calculation Helper
 // Calculates Net Profit by aggregating COA accounts
-// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+// Copyright (c) 2026 MBSuite. All Rights Reserved.
 // =====================================================
 
 import { query } from './db';

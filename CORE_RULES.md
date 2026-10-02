@@ -1,7 +1,7 @@
 # =====================================================
-# Micro Business Suite: Core System Rules & Blueprint
+# MBSuite: Core System Rules & Blueprint
 # Critical System Architecture and Guardrails
-# Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+# Copyright (c) 2026 MBSuite. All Rights Reserved.
 # =====================================================
 
 ## 🚨 CRITICAL GUARDRAILS
@@ -105,7 +105,7 @@ CREATE TABLE users (
 ```sql
 CREATE TABLE company_settings (
     id SERIAL PRIMARY KEY,                    -- Primary key for company settings
-    company_name VARCHAR(255) NOT NULL DEFAULT 'Micro Business Suite', -- Company name displayed on dashboard
+    company_name VARCHAR(255) NOT NULL DEFAULT 'MBSuite', -- Company name displayed on dashboard
     tax_id VARCHAR(50) NOT NULL DEFAULT '',   -- Company tax identification number
     address TEXT,                              -- Company address for documents
     logo_url TEXT,                            -- URL to company logo for documents
@@ -365,7 +365,7 @@ CREATE TABLE activity_log (
 ```sql
 -- Emergency data restoration (run ONLY if data wiped)
 INSERT INTO company_settings (company_name, tax_id, address) 
-VALUES ('Micro Business Suite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
+VALUES ('MBSuite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
 ON CONFLICT (company_name) DO UPDATE SET 
   tax_id = EXCLUDED.tax_id,
   address = EXCLUDED.address;
@@ -559,7 +559,7 @@ CREATE TABLE activity_log (
 ```sql
 -- Emergency data restoration (run ONLY if data wiped)
 INSERT INTO company_settings (company_name, tax_id, address) 
-VALUES ('Micro Business Suite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
+VALUES ('MBSuite', '123456789012', '123 Accounting Street, Bangkok, Thailand')
 ON CONFLICT (company_name) DO UPDATE SET 
   tax_id = EXCLUDED.tax_id,
   address = EXCLUDED.address;

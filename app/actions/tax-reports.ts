@@ -187,7 +187,7 @@ export async function exportMonthlySummaryToDrive() {
     const { getOrCreateFolder } = await import("@/lib/actions-helpers");
     const { getGoogleSheets } = await import("@/lib/google-server");
     const googleSheets = await getGoogleSheets();
-    const folderId = await getOrCreateFolder("Micro Business Suite Reports");
+    const folderId = await getOrCreateFolder("MBSuite Reports");
     const spreadsheet = await googleSheets.spreadsheets.create({
       requestBody: { properties: { title: `Budget Summary ${now.getMonth() + 1}/${now.getFullYear()}` } }
     });

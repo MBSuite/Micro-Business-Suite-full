@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteInvoice } from "@/app/actions";
-import { canAccessAdmin } from "@/lib/core-standards";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -8,15 +8,11 @@ export async function POST(req: Request) {
     const id = body?.id;
     if (!id) return NextResponse.json({ success: false, error: "Missing id" }, { status: 400 });
 
-    // Server-side authorization: ensure caller is admin
-    try {
-      const { auth } = await import('@/lib/auth');
-      const session = await auth();
-      if (!session?.user || !canAccessAdmin((session.user as any).role)) {
-        return NextResponse.json({ success: false, error: 'Unauthorized: admin access required' }, { status: 403 });
-      }
-    } catch (e) {
-      return NextResponse.json({ success: false, error: 'Unauthorized: admin access required' }, { status: 403 });
+    // Server-side authorization: verify the caller's CURRENT role in the DB,
+    // not the role embedded in the (up to 1-day old) JWT.
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return NextResponse.json({ success: false, error: gate.error }, { status: gate.status });
     }
 
     const res = await deleteInvoice(Number(id));

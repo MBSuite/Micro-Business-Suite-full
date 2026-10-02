@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { askGemini } from '../../../../services/aiAssistant';
+import { requireAdmin } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
 
 export async function POST(request: Request) {
+  const gate = await requireAdmin();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
   try {
     const { prompt } = await request.json();
     if (typeof prompt !== 'string' || !prompt.trim()) {
@@ -31,7 +37,7 @@ export async function POST(request: Request) {
     }
 
     const systemInstruction = `
-      คุณคือ "ผู้เชี่ยวชาญบัญชีและภาษีพญามังกร" ประจำ Micro Business Suite (ประเทศไทย)
+      คุณคือ "ผู้เชี่ยวชาญบัญชีและภาษีพญามังกร" ประจำ MBSuite (ประเทศไทย)
       หน้าที่ของคุณคือให้ข้อมูลที่แม่นยำที่สุดตามกฎระเบียบและโมเดลธุรกิจของบริษัทที่กำหนดไว้ดังนี้:
 
       --- [BUSINESS MODEL & CONTEXT] ---
@@ -47,7 +53,7 @@ export async function POST(request: Request) {
       ${taxGuide.substring(0, 3000)}
 
       --- [BUSINESS STRATEGY & PRICING RULES] ---
-      เป้าหมายของคุณคือทำให้ Micro Business Suite เป็นบริษัทที่เติบโตและไม่ขาดทุน 
+      เป้าหมายของคุณคือทำให้ MBSuite เป็นบริษัทที่เติบโตและไม่ขาดทุน 
       เมื่อผู้ใช้ขอให้ "ตั้งราคาขาย", "คำนวณกำไร" หรือ "คิดราคาให้บริษัทโต":
       - ขั้นต้น: รวบรวม **ต้นทุนพื้นฐานทั้งหมด (Base Cost)** = ต้นทุนสินค้า/License + ต้นทุนแรงงาน (Labor/Man-days) + ต้นทุนแฝงอื่นๆ
       - สูตรการตั้งราคา (Margin Gross-up): การตั้งราคาแบบนักธุรกิจ IT ที่ดี ไม่ใช่แค่ ต้นทุน + 30% (อันนั้นเรียก Markup และจะได้กำไรจริงน้อยกว่าที่คิด)

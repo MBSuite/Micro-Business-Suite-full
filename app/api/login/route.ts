@@ -1,8 +1,10 @@
 import { query } from "@/lib/db";
+import { isActiveStatus } from "@/lib/registration-bootstrap.mjs";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { LoginThrottle } from "@/lib/login-throttle.mjs";
 
 // Enforce JWT secret: MUST be set in environment, no fallback allowed
 function getJWTSecret(): Uint8Array {
@@ -18,13 +20,31 @@ function getJWTSecret(): Uint8Array {
 
 const SECRET = getJWTSecret();
 
+// In-memory and process-local; multi-instance deployments need shared storage.
+const loginThrottle = new LoginThrottle();
+
+function clientKey(req: Request, email: string): string {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown";
+  return `${ip}:${String(email || "").toLowerCase()}`;
+}
+
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-    console.log("[LOGIN API] Email:", email);
 
     if (!email || !password) {
       return NextResponse.json({ error: "Missing credentials" }, { status: 400 });
+    }
+
+    const key = clientKey(req, email);
+    if (!loginThrottle.isAllowed(key)) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again later." },
+        { status: 429 }
+      );
     }
 
     // Query user
@@ -33,25 +53,33 @@ export async function POST(req: Request) {
       [email]
     );
 
+    // Identical response for unknown user, inactive account, and wrong password
+    // to prevent account enumeration.
     if (res.rows.length === 0) {
-      console.log("[LOGIN API] User not found");
+      loginThrottle.recordFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     const user = res.rows[0];
-    console.log("[LOGIN API] User found:", user.email, "Status:", user.status);
 
-    if (user.status === "Inactive") {
-      return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+    // Only active accounts may sign in. Pending (awaiting admin approval) and
+    // Inactive accounts are rejected with the same generic message used for bad
+    // credentials, to avoid leaking account status. Status is matched
+    // case-insensitively via the shared helper (mirrors lower(status) in SQL).
+    if (!isActiveStatus(user.status)) {
+      loginThrottle.recordFailure(key);
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Verify password
     const match = await bcrypt.compare(password, user.password);
-    console.log("[LOGIN API] Password match:", match);
 
     if (!match) {
+      loginThrottle.recordFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
+
+    loginThrottle.clear(key);
 
     // Create JWT
     const token = await new SignJWT({
@@ -75,7 +103,6 @@ export async function POST(req: Request) {
       path: "/",
     });
 
-    console.log("[LOGIN API] Success");
     return NextResponse.json({
       success: true,
       user: {

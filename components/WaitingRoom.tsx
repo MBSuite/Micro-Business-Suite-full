@@ -84,7 +84,7 @@ export default function WaitingRoomPage({ userName, userEmail }: { userName?: st
         </div>
 
         <div className="mt-10 text-center text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">
-           Micro Business Suite &bull; Security & Accountability System
+           MBSuite &bull; Security & Accountability System
         </div>
       </div>
     </main>

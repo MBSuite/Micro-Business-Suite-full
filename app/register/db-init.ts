@@ -66,6 +66,14 @@ export async function checkAndInitUsersTable() {
 
 export async function promoteUserAction(email: string) {
   try {
+    // Bootstrap is handled by first-user registration. Promotion of an
+    // existing account always requires a current database-verified admin.
+    const { requireAdmin } = await import("@/lib/auth");
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      return { success: false, error: gate.error };
+    }
+
     const res = await query(
       "UPDATE users SET name = 'Admin', role = 'superadmin', status = 'Active' WHERE email = $1 RETURNING id, name, role, status",
       [email]

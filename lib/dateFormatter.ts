@@ -1,6 +1,6 @@
 /**
  * Date Formatter Utility - Thai Format (dd/mm/yyyy)
- * Centralized date formatting for the entire Micro Business Suite application
+ * Centralized date formatting for the entire MBSuite application
  */
 
 /**

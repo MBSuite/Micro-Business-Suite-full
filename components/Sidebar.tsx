@@ -33,7 +33,9 @@ import {
   Users2,
   Briefcase,
   Bell,
-  AlertOctagon
+  AlertOctagon,
+  Server,
+  Globe
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -59,6 +61,8 @@ const iconMap = {
   shieldCheck: ShieldCheck,
   database: Database,
   briefcase: Briefcase,
+  server: Server,
+  globe: Globe,
 } as const;
 
 type SidebarProps = {
@@ -124,7 +128,7 @@ export default function Sidebar({
             <div className="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-violet-200">
                M
             </div>
-            <span className="font-black text-slate-800 tracking-tighter text-sm uppercase">Micro Business Suite</span>
+            <span className="font-black text-slate-800 tracking-tighter text-sm uppercase">MBSuite</span>
          </div>
          <button 
            onClick={() => setIsMobileOpen(true)}
@@ -162,7 +166,7 @@ export default function Sidebar({
             </div>
             {(!isCollapsed || isMobileOpen) && (
               <div className="flex flex-col">
-                 <span className="font-black text-white text-lg tracking-tight uppercase leading-none">MICRO BUSINESS SUITE</span>
+                 <span className="font-black text-white text-lg tracking-tight uppercase leading-none">MBSUITE</span>
                  <span className="text-[9px] font-black text-violet-400 uppercase tracking-[0.4em] mt-1">Autonomous</span>
               </div>
             )}

@@ -205,7 +205,7 @@ export default function NewMemberPage() {
         </form>
 
         <div className="text-center text-gray-400 text-xs font-medium pb-8 border-t border-gray-200 pt-6">
-          © 2026 Micro Business Suite. Security Shield v2.1
+          © 2026 MBSuite. Security Shield v2.1
         </div>
       </div>
     </main>

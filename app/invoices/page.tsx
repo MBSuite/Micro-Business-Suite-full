@@ -166,7 +166,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: { s
 
             {/* Enterprise Footer */}
             <div className="text-center py-10 opacity-30">
-               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Scalable Ledger Architecture • Micro Business Suite 2026</p>
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Scalable Ledger Architecture • MBSuite 2026</p>
             </div>
          </div>
       </main>

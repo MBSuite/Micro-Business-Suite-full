@@ -18,6 +18,7 @@ export const MODULE_REGISTRY: AppModule[] = [
   // ==================== SALES ====================
   { id: "quotations", label: "ใบเสนอราคา (QT)", icon: "fileText", category: "sales", route: "/quotations", enabledByDefault: true },
   { id: "invoices", label: "ใบแจ้งหนี้ (INV)", icon: "receipt", category: "sales", route: "/invoices", enabledByDefault: true },
+  { id: "hosting_subscriptions", label: "สัญญาเช่าโฮสติ้ง", icon: "globe", category: "sales", route: "/hosting/subscriptions", enabledByDefault: true },
   { id: "recurring", label: "รอบบิลอัตโนมัติ", icon: "repeat", category: "sales", route: "/recurring", enabledByDefault: true },
   { id: "receipts", label: "ใบเสร็จรับเงิน", icon: "creditCard", category: "sales", route: "/receipts", enabledByDefault: true },
 
@@ -30,6 +31,7 @@ export const MODULE_REGISTRY: AppModule[] = [
   // ==================== MASTER DATA ====================
   { id: "inventory", label: "คลังสินค้า (Stock)", icon: "package", category: "master_data", route: "/inventory", enabledByDefault: true },
   { id: "services", label: "ราคากลางบริการ (Services)", icon: "briefcase", category: "master_data", route: "/services", enabledByDefault: true },
+  { id: "hosting_plans", label: "แพ็กเกจโฮสติ้ง", icon: "server", category: "master_data", route: "/hosting/plans", enabledByDefault: true },
   { id: "coa", label: "ผังบัญชี (COA)", icon: "pieChart", category: "master_data", route: "/admin/coa", enabledByDefault: true },
   { id: "contacts", label: "ผู้ติดต่อ / คู่ค้า (Contacts)", icon: "users", category: "master_data", route: "/contacts", enabledByDefault: true },
 
@@ -38,6 +40,15 @@ export const MODULE_REGISTRY: AppModule[] = [
   { id: "reports", label: "งบกำไรขาดทุน (P&L)", icon: "barChart", category: "reports", route: "/reports/profit-loss", enabledByDefault: true },
 
   // ==================== ADMIN ====================
+  {
+    id: "admin_console",
+    label: "แผงผู้ดูแล",
+    icon: "settings",
+    category: "admin",
+    route: "/admin",
+    requiresAdmin: true,
+    enabledByDefault: true,
+  },
   { id: "member_management", label: "จัดการสมาชิก", icon: "userCog", category: "admin", route: "/admin/members", requiresAdmin: true, enabledByDefault: true },
   { id: "groups", label: "จัดการกลุ่ม/สิทธิ์", icon: "shieldCheck", category: "admin", route: "/admin/groups", requiresAdmin: true, enabledByDefault: true },
   { id: "modules_control", label: "โมดูล/ตั้งค่า", icon: "settings", category: "admin", route: "/admin/modules", requiresAdmin: true, enabledByDefault: true },

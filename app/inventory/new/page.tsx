@@ -390,7 +390,7 @@ export default function NewProductPage() {
 
         {/* Footer Text */}
         <div className="text-center text-gray-400 text-xs font-medium pb-8 border-t border-gray-200 pt-6">
-           <p className="font-bold mb-1">© 2026 สงวนลิขสิทธิ์โดย Micro Business Suite</p>
+           <p className="font-bold mb-1">© 2026 สงวนลิขสิทธิ์โดย MBSuite</p>
            <p className="italic opacity-80">เราสร้าง Software เฉพาะทาง เพื่อขับเคลื่อนธุรกิจให้ก้าวล้ำ</p>
         </div>
       </div>

@@ -203,7 +203,7 @@ export default function EditContactClient({ contact }: { contact: any }) {
         </form>
 
         <div className="text-center text-slate-300 text-[10px] font-black uppercase tracking-[0.8em] py-10">
-           Micro Business Suite CRM Module v2.1
+           MBSuite CRM Module v2.1
         </div>
       </div>
     </main>

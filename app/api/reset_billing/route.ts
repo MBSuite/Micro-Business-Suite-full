@@ -1,5 +1,5 @@
 import { query } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 /**
@@ -13,23 +13,15 @@ import { NextResponse } from "next/server";
  */
 export async function POST(req: Request) {
   try {
-    // 1. Verify user is authenticated
-    const session = await auth();
-    if (!session || !session.user) {
+    // 1. Verify user is authenticated AND currently an admin (DB-backed, not JWT).
+    const gate = await requireAdmin();
+    if (!gate.ok) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized — not authenticated" },
-        { status: 401 }
+        { success: false, error: gate.error },
+        { status: gate.status }
       );
     }
-
-    // 2. Verify user has ADMIN role
-    const userRole = session.user.role?.toUpperCase();
-    if (userRole !== "ADMIN") {
-      return NextResponse.json(
-        { success: false, error: "Forbidden — admin access required" },
-        { status: 403 }
-      );
-    }
+    const session = { user: gate.user };
 
     // 3. Parse request body and verify confirmation token
     const body = await req.json().catch(() => ({}));

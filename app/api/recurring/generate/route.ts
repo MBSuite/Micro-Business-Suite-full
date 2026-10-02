@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { createInvoiceRecord, createReminder, getCompanySettings, getNextInvoiceNumber } from "@/app/actions";
 import { roundThaiTaxAmount } from "@/lib/tax";
-import { canAccessAdmin } from "@/lib/core-standards";
 
 async function ensureRecurringBillingSchema() {
   await query(`
@@ -51,9 +50,10 @@ export async function POST(req: Request) {
 
   let isAdmin = false;
   try {
-    const { auth } = await import("@/lib/auth");
-    const session = await auth();
-    isAdmin = Boolean(session?.user && canAccessAdmin((session.user as any).role));
+    // Verify the caller's CURRENT role from the database instead of the role
+    // baked into the JWT, so a demoted admin loses access immediately.
+    const { requireAdmin } = await import("@/lib/auth");
+    isAdmin = (await requireAdmin()).ok;
   } catch {
     isAdmin = false;
   }

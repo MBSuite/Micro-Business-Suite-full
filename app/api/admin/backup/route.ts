@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,27 +15,18 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(req: NextRequest) {
   try {
-    // 1. Verify user is authenticated
-    const session = await auth();
-    if (!session || !session.user) {
-      console.warn(`[AUDIT] Unauthorized backup access attempt - not authenticated`);
+    // 1. Verify user is authenticated AND currently an admin (DB-backed, not JWT).
+    const gate = await requireAdmin();
+    if (!gate.ok) {
+      console.warn(`[AUDIT] Unauthorized backup access attempt denied`);
       return NextResponse.json(
-        { error: "Unauthorized — not authenticated" },
-        { status: 401 }
+        { error: gate.error },
+        { status: gate.status }
       );
     }
+    const session = { user: gate.user };
 
-    // 2. Verify user has ADMIN role
-    const userRole = session.user.role?.toUpperCase();
-    if (userRole !== "ADMIN") {
-      console.warn(`[AUDIT] Unauthorized backup access attempt - user ${session.user.email} (role: ${session.user.role}) denied`);
-      return NextResponse.json(
-        { error: "Forbidden — admin access required" },
-        { status: 403 }
-      );
-    }
-
-    // 3. Log audit trail before exporting
+    // 2. Log audit trail before exporting
     const timestamp = new Date().toISOString();
     console.log(`[AUDIT] Database backup initiated by admin: ${session.user.email} (ID: ${session.user.id}) at ${timestamp}`);
 
@@ -81,7 +72,7 @@ export async function GET(req: NextRequest) {
       });
     } else {
       // Create a simple pseudo-SQL file (INSERT INTO statements)
-      let sqlContent = `-- Micro Business Suite Database Backup\n-- Date: ${new Date().toISOString()}\n-- Exported by: ${session.user.email}\n\nBEGIN;\n\n`;
+      let sqlContent = `-- MBSuite Database Backup\n-- Date: ${new Date().toISOString()}\n-- Exported by: ${session.user.email}\n\nBEGIN;\n\n`;
 
       for (const table of tables) {
         if (backupData[table].length === 0) continue;

@@ -1,14 +1,20 @@
 // =====================================================
-// Micro Business Suite: CSV Import API
+// MBSuite: CSV Import API
 // Bulk import expenses from CSV files
-// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+// Copyright (c) 2026 MBSuite. All Rights Reserved.
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { createExpenseJournalEntry } from '@/lib/journaling';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
+  const gate = await requireAdmin();
+  if (!gate.ok) {
+    return NextResponse.json({ error: gate.error }, { status: gate.status });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -75,15 +81,20 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Insert into expenses table
-        await query(`
+        // Insert into expenses and capture the real generated id, so the
+        // journal entry references the correct expense (the old code used the
+        // CSV row index `i + 1`, which does not match the DB id).
+        const insertRes = await query(`
           INSERT INTO expenses (title, category, amount, expense_date, reference_no, notes, status)
           VALUES ($1, $2, $3, $4, $5, $6, 'paid')
+          RETURNING id
         `, [title, category, amount, expense_date, reference_no, notes]);
+
+        const expenseId = insertRes.rows[0]?.id;
 
         // Create journal entry
         await createExpenseJournalEntry(
-          i + 1, // expenseId
+          Number(expenseId),
           0, // vendorId (placeholder)
           amount,
           0, // vatAmount (placeholder)

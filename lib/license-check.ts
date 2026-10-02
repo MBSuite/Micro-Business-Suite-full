@@ -1,7 +1,7 @@
 // =====================================================
-// Micro Business Suite: License Verification Middleware
+// MBSuite: License Verification Middleware
 // Protects the unique 5-Journal Engine IP
-// Copyright (c) 2026 Micro Business Suite. All Rights Reserved.
+// Copyright (c) 2026 MBSuite. All Rights Reserved.
 //
 // Backed by lib/license.ts (offline signed license).
 // License key format: MBS.<base64url(payload)>.<base64url(HMAC-SHA256)>

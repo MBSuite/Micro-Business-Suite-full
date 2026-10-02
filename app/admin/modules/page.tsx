@@ -11,15 +11,17 @@ type RegistryModule = {
   requiresAdmin?: boolean;
 };
 
-const categoryOrder = [
-  "admin",
-  "finance_accounting",
-  "finance_tax",
-  "stock",
-  "hr",
-  "sales_co",
-  "service",
-];
+// Category order and labels come from the canonical module registry so this page
+// can never drift from the categories actually used by MODULE_REGISTRY.
+const categoryOrder = ["sales", "operations", "master_data", "reports", "admin"];
+
+const CATEGORY_LABELS: Record<string, string> = {
+  sales: "SALES — งานขาย",
+  operations: "OPERATIONS — ค่าใช้จ่ายและบัญชี",
+  master_data: "MASTER DATA — ข้อมูลหลัก",
+  reports: "REPORTS — รายงาน",
+  admin: "ADMIN — ผู้ดูแลระบบ",
+};
 
 export default function AdminModulesPage() {
   const [loading, setLoading] = useState(true);
@@ -121,7 +123,9 @@ export default function AdminModulesPage() {
             if (mods.length === 0) return null;
             return (
               <div key={category} className="bg-white rounded-2xl border border-slate-100 p-6 md:p-8 shadow-sm">
-                <h2 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-4">{category}</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-4">
+                  {CATEGORY_LABELS[category] || category}
+                </h2>
                 <div className="space-y-3">
                   {mods.map((mod) => (
                     <label key={mod.id} className="flex items-center justify-between border border-slate-100 rounded-xl px-4 py-3">
