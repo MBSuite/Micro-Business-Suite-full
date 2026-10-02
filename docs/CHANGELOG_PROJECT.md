@@ -29,3 +29,12 @@ Tracks meaningful behavior/architecture changes (not every small code diff).
   - RBAC group permission page now uses shared permission modules
   - added `services` and `payroll` routes for menu completeness
 
+## [2026-10-02]
+
+- Reconciled project documentation with the current implementation: custom JWT/proxy authentication, deployment environment requirements, and dashboard sync behavior.
+- Clarified that tax exports are preparation summaries, not official RD filing files; recorded unresolved WHT/COA implementation discrepancies for accountant and developer review.
+- Added a status note that the historical GitHub workflow entry is not proof of an active workflow; no `.github/workflows/` files were found in the current checkout.
+- Verified test/type/lint snapshot: `pnpm test` 14 passed; `pnpm exec tsc --noEmit` clean (0 errors); `pnpm lint` 363 errors and 169 warnings. These are point-in-time results, not release approval.
+- Removed `tests/taxAutomator.test.ts` (owner decision, 2 Oct 2026). The file imported two symbols that `lib/taxAutomator.ts` does not export and called the async `InputTaxValidator.validate()` without `await`; `package.json` only runs `tests/**/*.test.mjs`, so it had never executed. Deleting it clears all 17 TypeScript errors. `lib/taxAutomator.ts` itself still has no test coverage.
+- Backup encryption remains open: `scripts/auto-backup.mjs` gzips and uploads to Drive without encrypting the payload first. Owner paused this item for now; it must be revisited before production use because the archive contains customer data and bcrypt password hashes.
+

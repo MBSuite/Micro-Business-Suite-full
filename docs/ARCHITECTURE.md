@@ -3,8 +3,8 @@
 ## Stack
 
 - App: Next.js (App Router) + TypeScript
-- Database: PostgreSQL (Neon)
-- Auth: NextAuth credentials
+- Database: PostgreSQL via `pg` (`lib/db.ts`); provider is deployment-specific
+- Auth: custom JWT using `jose`, `session-token` cookie, and `proxy.ts`; no NextAuth runtime
 
 ## Core Modules
 
@@ -17,9 +17,9 @@
 ## Canonical Data Flow
 
 1. Business document created (`invoice`, `expense`, `payment_voucher`, `payment`)
-2. Accounting entry generated in `journal_entries`
-3. Reports/dashboard read normalized journal presentation
-4. Access enforced by RBAC (`groups`, `group_permissions`, `user_groups`)
+2. Relevant server action may generate entries in `journal_entries`; transaction and authorization coverage vary by workflow
+3. Some reports read journal presentation; tax summaries also query business tables directly
+4. `proxy.ts` enforces a session gate; RBAC/admin authorization is handled separately where implemented
 
 ## Canonical Access Standard
 
@@ -39,4 +39,10 @@
 - Preserve historical accounting evidence
 - Backward compatibility required
 - No destructive schema operations in production
+
+## Verification Caveats
+
+- Authentication is custom JWT, not NextAuth; `NEXTAUTH_*` remains in environment variable names for compatibility.
+- Do not assume every server action or API route enforces module-level RBAC. Verify the target route before describing its access policy.
+- Tax summaries and export actions are preparation aids, not proof of a correct filing or an end-to-end Revenue Department submission.
 

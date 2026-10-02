@@ -17,8 +17,12 @@
 ## Tax Rules (Current Policy)
 
 - VAT policy follows configured company settings
-- WHT operational default is 3% for supported service flows
+- WHT operational default is 3% only for supported service flows; determine the applicable treatment from the contract, payee, income type, and current Revenue Department rules. Do not apply 3% or 5% universally.
 - Any exception policy must be documented here before implementation
+
+### Implementation Warning (2026-10-02)
+
+The current UI, AI guidance, and RD submission helper do not agree on WHT rates. In addition, the payment-voucher UI sends `wht_amount` while its server action reads `withholding_amount`. Treat WHT entries and reports as unverified until the mapping and code path are reconciled and tested; this note does not change the canonical tax policy above.
 
 ## Expense Recording Rule (PDF Evidence First)
 

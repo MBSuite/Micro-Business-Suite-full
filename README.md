@@ -1,6 +1,6 @@
 # MBSuite: ระบบบัญชีอัจฉริยะ
 
-ระบบบริหารจัดการบัญชีและภาษีอัตโนมัติสำหรับ SMEs — รองรับการออกเอกสาร การทำบัญชีรายวัน ภาษีทุกประเภท (VAT / WHT / ภ.ง.ด.) โมดูลเปิดปิดได้ และเชื่อมต่อกับระบบ Google (คลาวด์/รายงานอัตโนมัติ)
+ระบบจัดการเอกสารธุรกิจและบัญชีสำหรับ SMEs — มี invoice, expenses, journals, reports และส่วนเตรียมข้อมูลภาษี การคำนวณ/รายงานภาษีต้องตรวจสอบกับเอกสารต้นทางและผู้ทำบัญชีก่อนยื่น
 
 ---
 
@@ -25,20 +25,20 @@
 - ผู้ติดต่อ / คู่ค้า (Contacts)
 
 ### รายงานและภาษี (Reports & Tax)
-- รายงานภาษีสรุป VAT ซื้อ-ขาย และภาษีหัก ณ ที่จ่าย แบบเรียลไทม์
-- **RD-Ready:** เชื่อมต่อ RD API Portal (e-Tax Invoice / Withholding) ผ่าน `lib/rd-api.ts` + เทมเพลตไฟล์ `.txt` ภ.พ.30 / ภ.ง.ด.53 (ดู `docs/PP30.txt`, `docs/PND53.txt`)
+- รายงาน/summary ภาษี VAT, WHT และ ภ.พ.36 เพื่อช่วยเตรียมข้อมูล; ไม่ใช่การยื่นแบบหรือไฟล์ RD โดยตรง
+- มี RD API client บางเส้นทาง แต่ยังไม่ยืนยันการทำงาน end-to-end กับ production; batch submit ปัจจุบันเป็น stub
 - งบกำไรขาดทุน (P&L)
 
 ### AI และระบบอัตโนมัติ
 - ผู้ช่วย AI ถาม-ตอบด้านบัญชี (`/ai`) + AI Chat ทั่วแอพ
 - **AI Auditor** — ตรวจสอบความผิดปกติของข้อมูลและกระเปาะแจ้งเตือน + job รายงานอัตโนมัติ (`npm run ai:audit`)
-- **Tax Automator** — เตรียม/ประมวลผลยอดภาษีจากข้อมูลจริง (`npm run tax:update`)
+- **Tax Automator** — มี helper/job สำหรับตรวจและสรุปบางกรณี (`pnpm tax:update`); ไม่ถือเป็นการรับรองผลภาษี
 
 ### คลาวด์ & ระบบอัตโนมัติ Google (Google-First)
-- ปุ่มสรุปยอดรายเดือนส่งขึ้น **Google Drive**
-- **Auto-backup ฐานข้อมูล** ขึ้น Drive ทุกวัน 02:00 (เก็บ 30 วัน) — `scripts/auto-backup.mjs`
-- **Sheets Dashboard** ภาพรวมรายเดือน/รายจ่ายแยกหมวด/รายการล่าสุด อัปเดต 02:05 — `scripts/dashboard-sheet.mjs`
-- **Calendar เตือนอัตโนมัติ** — จ่ายบิล Google Workspace, ต่ออายุลูกค้า (ต้องการ config ผู้ใช้เพิ่มเติม)
+- ปุ่มสรุปบน Dashboard สร้าง Google Sheet แต่ action ปัจจุบันยังไม่เติมข้อมูลลงใน sheet
+- เมื่อเปิด `CRON_ENABLED=true` บน Node process ที่ทำงานต่อเนื่อง จะเรียก backup เวลา 02:00 และ `dashboard-sheet` เวลา 02:05
+- `scripts/dashboard-sheet.mjs` เขียนสรุปลง 3 sheets; ยังต้องทดสอบ credentials, schedule และ restore ใน environment จริง
+- มีหน้า Calendar; การสร้าง/ส่ง reminder ผ่าน Google ยังต้องตั้งค่าและทดสอบ end-to-end ก่อนถือว่าใช้งานอัตโนมัติได้
 
 ### การจัดการ (Admin)
 - จัดการสมาชิก / บทบาท (RBAC) ตาม `docs/RBAC_STANDARD.md`
@@ -52,19 +52,20 @@
 
 1. หน้าแรก (Dashboard) — ภาพรวมสุขภาพการเงิน
 2. ออกเอกสาร: ใบเสนอราคา → ใบแจ้งหนี้ → รับชำระ (ใบเสร็จ/ใบกำกับภาษี)
-3. ปิดงบเดือน: กด "สรุปยอดส่งเข้า Google Drive" (หรือตั้ง cron backup/dashboard)
+3. ตรวจสอบรายงานเดือนจากฐานข้อมูลและเอกสารต้นทาง; อย่าใช้ปุ่ม Google Sheet เป็นรายงานที่กรอกข้อมูลแล้วจนกว่าจะมีการยืนยันการเติมข้อมูล
 
 ## ขั้นตอนติดตั้ง
 
 ```
-npm install
-cp .env.example .env.local   # ตั้งค่า DATABASE_URL + Secrets
-npm run dev
+pnpm install
+cp .env.example .env.local
+# ตั้ง DATABASE_URL, NEXTAUTH_URL และ NEXTAUTH_SECRET/AUTH_SECRET
+pnpm dev
 ```
 
-Scripts ที่ใช้ได้: `npm test` (รัน `tests/*.test.mjs`), `npm run lint`, `npm run tax:update`, `npm run ai:audit`, `npm run check:knowledge`, `npm run check:consistency`
+Scripts ที่ใช้ได้: `pnpm test` (รันเฉพาะ `tests/**/*.test.mjs` ซึ่งมี 4 ไฟล์), `pnpm lint`, `pnpm tax:update`, `pnpm ai:audit`, `pnpm check:knowledge`, `pnpm check:consistency`. ไม่มีเทสต์ภาษีใน `tests/` — `lib/taxAutomator.ts` ยังไม่มี test coverage.
 
-cron ภายนอก (ตั้งแล้วบนเครื่องพี่): `scripts/auto-backup.mjs` 02:00 น. + `scripts/dashboard-sheet.mjs` 02:05 น.
+การตั้ง cron ในเครื่อง production ต้องยืนยันจาก environment ของเครื่องนั้น; ในแอปมี scheduler เมื่อเปิด `CRON_ENABLED=true`.
 
 ---
 
@@ -81,16 +82,16 @@ node scripts/issue-license.mjs \
 # 2) ใส่ค่าจริงใน .env.local (ของเครื่องลูกค้า):
 #    LICENSE_SALT   = salt เดียวกับฝั่งผู้ขาย
 #    MBS_LICENSE_KEY = license key ที่ออกให้ลูกค้ารายนี้
-#    DATABASE_URL   = postgresql://mbs:mbs@db:5432/mbs?sslmode=disable
+#    BILLING_DATABASE_URL = postgresql://USER:PASS@HOST:5432/DB?sslmode=disable
 #    NEXTAUTH_SECRET / AUTH_SECRET = random secret
-
-# 3) รัน (สร้าง PostgreSQL + app พร้อมกัน — schema โหลดอัตโนมัติ)
+# 3) Compose ปัจจุบันไม่มี DB service; ต้องมี external network stack_stack และ PostgreSQL ที่เข้าถึงได้
+#    เตรียม schema/migrations ตาม deployment runbook ก่อนเริ่มแอป
 docker compose up -d --build
 ```
 
-- เปิดแอพที่: `http://localhost:3000`
-- สร้าง admin ครั้งแรก: หน้า `/register` → register แล้วกด `promote` เป็น superadmin
-- **license lock:** production (`docker compose`) จะ fail-fast ถ้า `MBS_LICENSE_KEY` ผิด/หมดอายุ (subscription) — perpetual ไม่หมดอายุ, subscription หมดอายุเมื่อถึง `expires_at`
+- Compose ปัจจุบัน bind `127.0.0.1:3001:3000`; เปิดจากเครื่อง host ที่ `http://127.0.0.1:3001` และเข้าจากภายนอกผ่าน proxy ที่ตั้งค่าไว้
+- ผู้ใช้คนแรกบนฐาน users ว่างจะได้ `superadmin/Active`; ผู้สมัครถัดไปเป็น `user/Pending` และต้องรอ admin อนุมัติ ไม่ต้องกด `/register/promote`
+- **license lock:** production ต้องมี `LICENSE_SALT` และ `MBS_LICENSE_KEY` ทั้ง perpetual และ subscription; subscription ต้องมีวันหมดอายุ ส่วน perpetual ไม่จำเป็นต้องมีวันหมดอายุ
 - โหมดการขาย: `PRODUCT_MODE=perpetual` (ขายขาด) หรือ `PRODUCT_MODE=subscription` (เช่า รายเดือน)
 
 ---
@@ -99,7 +100,7 @@ docker compose up -d --build
 
 - **Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5
 - **UI:** Tailwind CSS 4 + lucide-react
-- **ฐานข้อมูล:** PostgreSQL (ผ่าน `@vercel/postgres`; สคริปต์อัตโนมัติใช้ `pg`)
+- **ฐานข้อมูล:** PostgreSQL ผ่าน `pg` (`lib/db.ts`)
 - **เอกสาร PDF:** jspdf / jspdf-autotable / exceljs · **Barcode/QR:** react-barcode / qrcode.react
 - **จ็อบเบื้องหลัง:** node-cron (recurring, tax, ai-audit)
 - **Integration:** googleapis (Drive / Sheets / Calendar) — อ่าน OAuth จาก `.env.local` ผ่าน `scripts/google-auth.mjs`
@@ -111,6 +112,7 @@ docker compose up -d --build
 - กฎระบบหลัก: `CORE_RULES.md`, `AUTH_RULES.md`
 - มาตรฐานสิทธิ์: `docs/RBAC_STANDARD.md`
 - คู่มือใช้งาน: `docs/USER_MANUAL.md`, `docs/COMPLETE_MANUAL.md`
+- เอกสารรวมสถานะและข้อจำกัดจาก code: `docs/MICRO-BUSINESS-SUITE-DOCUMENTATION.md` (snapshot; canonical rules อยู่ในไฟล์กฎด้านล่าง)
 - ความรู้ทางภาษี: `docs/THAI_TAX_GUIDE.md`, `docs/KNOWLEDGE_PACK.md`
 - สถาปัตยกรรม: `docs/ARCHITECTURE.md`
 - บันทึกการตัดสินใจ: `docs/DECISIONS.md`
