@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { LoginThrottle } from "@/lib/login-throttle.mjs";
 
 // Enforce JWT secret: MUST be set in environment, no fallback allowed
 function getJWTSecret(): Uint8Array {
@@ -19,14 +20,8 @@ function getJWTSecret(): Uint8Array {
 
 const SECRET = getJWTSecret();
 
-// Basic in-memory login throttling (per client IP + email).
-// NOTE: process-local only — not shared across replicas. A shared store (Redis/
-// Upstash) is needed for multi-instance deployments.
-type LoginAttempt = { count: number; resetAt: number; lockedUntil: number };
-const loginAttempts = new Map<string, LoginAttempt>();
-const LOGIN_WINDOW_MS = 15 * 60 * 1000;
-const LOGIN_MAX_ATTEMPTS = 10;
-const LOGIN_LOCK_MS = 15 * 60 * 1000;
+// In-memory and process-local; multi-instance deployments need shared storage.
+const loginThrottle = new LoginThrottle();
 
 function clientKey(req: Request, email: string): string {
   const ip =
@@ -34,33 +29,6 @@ function clientKey(req: Request, email: string): string {
     req.headers.get("x-real-ip") ||
     "unknown";
   return `${ip}:${String(email || "").toLowerCase()}`;
-}
-
-function checkLoginThrottle(key: string): { allowed: boolean } {
-  const now = Date.now();
-  const entry = loginAttempts.get(key);
-  if (!entry) return { allowed: true };
-  if (entry.lockedUntil > now) return { allowed: false };
-  if (entry.resetAt <= now) return { allowed: true };
-  return { allowed: entry.count < LOGIN_MAX_ATTEMPTS };
-}
-
-function recordLoginFailure(key: string): void {
-  const now = Date.now();
-  const entry =
-    loginAttempts.get(key) ?? { count: 0, resetAt: now + LOGIN_WINDOW_MS, lockedUntil: 0 };
-  entry.count += 1;
-  if (entry.count >= LOGIN_MAX_ATTEMPTS) {
-    entry.lockedUntil = now + LOGIN_LOCK_MS;
-    entry.count = 0;
-    entry.resetAt = now + LOGIN_WINDOW_MS;
-  }
-  loginAttempts.set(key, entry);
-  if (loginAttempts.size > 10000) loginAttempts.clear();
-}
-
-function clearLoginAttempts(key: string): void {
-  loginAttempts.delete(key);
 }
 
 export async function POST(req: Request) {
@@ -72,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     const key = clientKey(req, email);
-    if (!checkLoginThrottle(key).allowed) {
+    if (!loginThrottle.isAllowed(key)) {
       return NextResponse.json(
         { error: "Too many attempts. Please try again later." },
         { status: 429 }
@@ -88,7 +56,7 @@ export async function POST(req: Request) {
     // Identical response for unknown user, inactive account, and wrong password
     // to prevent account enumeration.
     if (res.rows.length === 0) {
-      recordLoginFailure(key);
+      loginThrottle.recordFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
@@ -99,7 +67,7 @@ export async function POST(req: Request) {
     // credentials, to avoid leaking account status. Status is matched
     // case-insensitively via the shared helper (mirrors lower(status) in SQL).
     if (!isActiveStatus(user.status)) {
-      recordLoginFailure(key);
+      loginThrottle.recordFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
@@ -107,11 +75,11 @@ export async function POST(req: Request) {
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      recordLoginFailure(key);
+      loginThrottle.recordFailure(key);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    clearLoginAttempts(key);
+    loginThrottle.clear(key);
 
     // Create JWT
     const token = await new SignJWT({

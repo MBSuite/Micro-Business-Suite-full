@@ -40,6 +40,15 @@ export const MODULE_REGISTRY: AppModule[] = [
   { id: "reports", label: "งบกำไรขาดทุน (P&L)", icon: "barChart", category: "reports", route: "/reports/profit-loss", enabledByDefault: true },
 
   // ==================== ADMIN ====================
+  {
+    id: "admin_console",
+    label: "แผงผู้ดูแล",
+    icon: "settings",
+    category: "admin",
+    route: "/admin",
+    requiresAdmin: true,
+    enabledByDefault: true,
+  },
   { id: "member_management", label: "จัดการสมาชิก", icon: "userCog", category: "admin", route: "/admin/members", requiresAdmin: true, enabledByDefault: true },
   { id: "groups", label: "จัดการกลุ่ม/สิทธิ์", icon: "shieldCheck", category: "admin", route: "/admin/groups", requiresAdmin: true, enabledByDefault: true },
   { id: "modules_control", label: "โมดูล/ตั้งค่า", icon: "settings", category: "admin", route: "/admin/modules", requiresAdmin: true, enabledByDefault: true },
