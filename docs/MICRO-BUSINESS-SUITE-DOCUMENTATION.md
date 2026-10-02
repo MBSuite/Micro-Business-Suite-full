@@ -467,7 +467,7 @@ Local dev ใช้ `DATABASE_URL` โดยตรง ส่วน Compose เ�
 | `pnpm dev` | โหมดพัฒนา (ปกติ port 3000) |
 | `pnpm build` | build production |
 | `pnpm start` | รัน production |
-| `pnpm test` | รันเฉพาะ `tests/**/*.test.mjs`; ไม่รัน `tests/taxAutomator.test.ts` |
+| `pnpm test` | รันเฉพาะ `tests/**/*.test.mjs` (4 ไฟล์); ไม่มีเทสต์ `.ts` ใน `tests/` แล้ว |
 | `pnpm lint` | ESLint ทั้ง repository |
 | `pnpm tax:update` | รัน tax update job; ไม่ใช่การยื่นแบบ |
 | `pnpm ai:audit` | รัน AI Auditor |
@@ -614,7 +614,7 @@ components/                   ← 13 React components ที่ใช้ซ้�
 scripts/                      ← auto-backup, dashboard-sheet, issue-license, *.sql
 jobs/                         ← scheduleTaxUpdate, scheduleAiAudit, scheduleMaintenance
 migrations/                   ← 7 ไฟล์ SQL migration
-tests/                        ← 5 ไฟล์ (ดูหมายเหตุข้อ 7.5)
+tests/                        ← 4 ไฟล์ `.test.mjs` (เคยมี `.test.ts` ที่ไม่เคยรัน — ลบแล้ว ดู 7.5.1)
 ```
 
 ### 6.5 จุดสำคัญที่ต้องรู้เรื่อง DB
@@ -715,10 +715,11 @@ new Pool({
 | 3 | `app/admin/modules/page.tsx` | **บั๊กจริง** — `categoryOrder` = `[admin, finance_accounting, finance_tax, stock, hr, sales_co, service]` แต่ registry ใช้ `[sales, operations, master_data, reports, admin]` → **แสดงได้แค่หมวด ADMIN (5 โมดูล) โมดูลธุรกิจอีก 16 โมดูลไม่แสดงเลย** | แก้ `categoryOrder` + เพิ่ม `CATEGORY_LABELS` แสดงชื่อไทย/อังกฤษ |
 | 4 | `app/register/page.tsx` | ไม่มีคำอธิบายว่าคนแรกได้ superadmin / คนถัดไปเป็น Pending | เพิ่มกล่องแจ้งเตือน (ตรงกับ logic ใน `registration-bootstrap.mjs`) |
 
-**ผลตรวจสอบที่บันทึกในรอบนั้น:**
+**ผลตรวจสอบ ณ 2 ต.ค. 2026 หลังปิดงานเอกสารรอบนี้:**
 ```
-pnpm test          → 14/14 ผ่าน
-pnpm exec tsc --noEmit → 17 errors ใน tests/taxAutomator.test.ts (ดู 7.5)
+pnpm test              → 14/14 ผ่าน
+pnpm exec tsc --noEmit → สะอาด 0 errors   (เดิม 17 errors ใน tests/taxAutomator.test.ts — ลบแล้ว ดู 7.6.1)
+pnpm check:consistency → ผ่าน
 ```
 
 ### 7.4 v0.1.2 — เอกสารรวม (2 ต.ค. 2026)
@@ -731,32 +732,15 @@ pnpm exec tsc --noEmit → 17 errors ใน tests/taxAutomator.test.ts (ดู 7
 
 ### 7.5 ⚠️ ปัญหาที่ยัง**ไม่ได้แก้** — ต้องตัดสินใจ
 
-#### 7.5.1 `tests/taxAutomator.test.ts` เป็นไฟล์ตาย
-
-**อาการ:** `pnpm test` ผ่าน 14/14 แต่ `pnpm exec tsc --noEmit` แจ้ง error 17 จุด
-**สาเหตุ 2 ชั้น:**
-
-1. **ไม่ได้รันโดย test script** — `package.json` ใช้ `node --test tests/**/*.test.mjs` → เลือกเฉพาะ `.mjs`; TypeScript compiler ยังตรวจ `.test.ts` และพบ errors
-   → เทสต์ภาษีทั้งชุด **ไม่เคยทำงาน** ตั้งแต่เขียนมา
-2. **โค้ดพังจริง** — เขียนสมัยที่ API เป็น sync:
-   - `COMPANY_TAX_ID`, `COMPANY_ADDRESS` — **ไม่มี export** นี้ใน `lib/taxAutomator.ts` (export มีแค่ `TAX_FILING_URLS`, `RD_EFILING_HOMEPAGE` ที่ `:6`/`:14` และ 4 class — ย้ายไปอ่านจาก `company_settings` ผ่าน `getCompanySettings()` ที่ `:37` แล้ว)
-   - `InputTaxValidator.validate()` เป็น **async** แต่เทสต์ไม่ `await` → เทสต์จะอ้าง property ของ Promise
-
-**ทางเลือก (รอพี่ฆังสั่ง):**
-| ทางเลือก | ผลลัพธ์ | ข้อเสีย |
-|---|---|---|
-| ก. แก้ให้รันได้ | เพิ่ม `await`, mock `getCompanySettings()`, เปลี่ยนเป็น `.mjs` | ต้อง mock DB — เขียนงานเพิ่ม |
-| ข. ลบทิ้ง | `pnpm exec tsc --noEmit` สะอาด | เสียเทสต์ครอบคลุม logic ภาษี |
-| ค. เปลี่ยน test script ให้รัน `.ts` ด้วย | เจอปัญหาทันที | ต้องเพิ่ม `tsx` loader |
-
-> **ผมยังไม่ได้แก้** เพราะทั้ง 3 ทางเปลี่ยนพฤติกรรมการทดสอบของโปรเจกต์ — เกินขอบเขตที่พี่สั่ง
-
-#### 7.5.2 Backup ไม่เข้ารหัส
+#### 7.5.1 ⏸️ Backup ไม่เข้ารหัส — พี่ฆังสั่ง "หยุดไว้ก่อน" (2 ต.ค. 2026)
 
 `scripts/auto-backup.mjs:97` — `zlib.gzipSync()` แล้วอัปโหลดตรงขึ้น Google Drive
 - ไฟล์มี **ข้อมูลผู้ใช้ทั้งหมด** รวม bcrypt password hash
 - Drive ปกติเข้ารหัสระหว่างส่ง (HTTPS + Google encrypt at rest) แต่ **คนที่มีสิทธิ์เข้าโฟลเดอร์อ่านได้**
 - ควร: เข้ารหัสก่อนอัปโหลด (เช่น AES-256-GCM) หรือแยกข้อมูลลับออกจาก backup
+
+> พี่ฆังตัดสินใจ **ไม่แก้ในรอบนี้** — คงรายการไว้ติดตาม ต้องทบทวนก่อนเปิดใช้งานจริง
+> เพราะไฟล์ backup มีข้อมูลลูกค้าทั้งหมด
 
 #### 7.5.3 Deployment topology ที่ยังต้องเตรียมก่อน deploy
 
@@ -771,9 +755,9 @@ README และ env instructions ได้รับการแก้ให้�
 #### 7.5.5 GitHub workflow และคุณภาพ static checks
 
 - ไม่พบ `.github/workflows/` ใน repository ณ วันที่ตรวจ; ไม่ได้ยืนยัน CI จาก provider อื่น
-- `pnpm lint` ณ 2026-10-02: **363 errors, 169 warnings**
-- `pnpm exec tsc --noEmit`: **17 errors** ใน `tests/taxAutomator.test.ts`
-- `pnpm test`: **14 passed**; คำสั่งนี้ไม่รัน test ไฟล์ `.ts`
+- `pnpm exec tsc --noEmit` ณ 2026-10-02: **สะอาด 0 errors** (เดิม 17 errors — ลบ `tests/taxAutomator.test.ts` ตามดู 7.6.1)
+- `pnpm test`: **14 passed** จาก `tests/**/*.test.mjs` 4 ไฟล์
+- `pnpm lint` ณ 2026-10-02: **363 errors, 169 warnings** — ยังไม่ได้แก้ ต้องตัดสินใจว่าจะลด scope หรือทยอยแก้
 
 #### 7.5.6 Lazy migration ขัดกับนโยบายตัวเอง
 
@@ -794,6 +778,36 @@ commit 3 ชุดเดียวกันถูกสร้างเป็น 2
 > ต่างกันจุดเดียว: `gitea/main` ยังเก็บไฟล์ว่าง 4 ไฟล์ที่ root (`micro-account@0.1.0`, `next`, `psql`, `rmdir`)
 > ซึ่งถูกลบใน `93b97d1` — ถ้า merge `main` กลับเข้ามาเมื่อไร ไฟล์เหล่านี้จะกลับมาต้องลบซ้ำ
 > ที่มาของไฟล์: คำสั่งลบที่ redirect ผิดทางจึงสร้างไฟล์เปล่าแทนที่จะลบ — ควรใช้ `rm` ที่ quote path เสมอ
+
+### 7.6 ✅ แก้แล้ว — ปิดรายการที่ตัดสินใจแล้ว
+
+#### 7.6.1 ลบ `tests/taxAutomator.test.ts` (พี่ฆังสั่ง 2 ต.ค. 2026)
+
+**อาการเดิม:** `pnpm test` ผ่าน 14/14 แต่ `pnpm exec tsc --noEmit` แจ้ง error 17 จุด
+
+**สาเหตุ 2 ชั้น:**
+
+1. **ไม่ได้รันโดย test script** — `package.json` ใช้ `node --test tests/**/*.test.mjs` → เลือกเฉพาะ `.mjs`; TypeScript compiler ยังตรวจ `.test.ts` แล้วพบ errors
+   → เทสต์ภาษีทั้งชุด **ไม่เคยทำงาน** ตั้งแต่เขียนมา
+2. **โค้ดพังจริง** — เขียนสมัยที่ API เป็น sync:
+   - `COMPANY_TAX_ID`, `COMPANY_ADDRESS` — **ไม่มี export** นี้ใน `lib/taxAutomator.ts` (export มีแค่ `TAX_FILING_URLS`, `RD_EFILING_HOMEPAGE` ที่ `:6`/`:14` และ 4 class — ย้ายไปอ่านจาก `company_settings` ผ่าน `getCompanySettings()` ที่ `:37` แล้ว)
+   - `InputTaxValidator.validate()` เป็น **async** แต่เทสต์ไม่ `await` → เทสต์จะอ้าง property ของ Promise
+
+**ที่เลือก:** ลบทิ้ง เพราะเทสต์นี้ไม่เคยรันมาก่อน จึงไม่มี "ที่ผ่านมาก่อน" ที่จะสูญเสีย
+และการคงไว้ทำให้ type-check แดงต่อเนื่อง ไม่ได้ช่วยจับบั๊กใด ๆ
+
+**ผลหลังลบ (รันคำสั่งจริง):**
+```
+pnpm test              → 14/14 ผ่าน
+pnpm exec tsc --noEmit → สะอาด 0 errors
+pnpm lint              → 532 problems (363 errors, 169 warnings) — ไม่เปลี่ยน
+```
+
+> **สิ่งที่ยังไม่ได้ทำ:** `lib/taxAutomator.ts` เองยังไม่มีเทสต์ครอบคลุม 4 class ที่ export
+> (`InputTaxValidator`, `WithholdingTaxEngine`, `OverseasServiceTrigger`, `TaxCalendarAlerts`)
+> และไม่มีการเรียก `InputTaxValidator` จาก expense flow (ดูข้อ 2) — ถ้าจะเพิ่มความคุ้มครอง
+> ต้องเขียนใหม่โดย mock `getCompanySettings()` เพราะขึ้นกับ DB
+> **นี่คือช่องโหว่ coverage ที่ต้องรู้** ไม่ใช่ผลที่ดีขึ้นโดยรวม
 
 ---
 
