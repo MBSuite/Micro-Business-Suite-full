@@ -1,5 +1,6 @@
 import zlib from "node:zlib";
 import { Readable } from "node:stream";
+import crypto from "node:crypto";
 import { dbPool, googleAuth, drive } from "./google-auth.mjs";
 
 const BACKUP_DIR = "Backup-Auto";

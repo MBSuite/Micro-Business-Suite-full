@@ -56,3 +56,8 @@ Tracks meaningful behavior/architecture changes (not every small code diff).
 ## [2026-10-02 - cleanup]
 
 - Cleared `@typescript-eslint/no-unused-vars` across the repository (159 → 0) with targeted edits only: unused imports (93), unused catch bindings (33), dead locals (14), ignored state setters/values (6), two kept signatures suppressed via scoped eslint-disable. Total problems reduced 532 → 370 (360 errors, 10 warnings); the 3 `no-explicit-any` reductions were side effects of `catch (error: any)` → `catch`. All checks green (tsc 0, tests 36/36, consistency passed).
+
+## [2026-10-02 - backup-encryption]
+
+- Added AES-256-GCM encryption to `scripts/auto-backup.mjs`. Output changed from `mbs-db-*.json.gz` to `mbs-db-*.json.gz.enc` (IV 12B + auth tag 16B + ciphertext, application/octet-stream). Requires `BACKUP_ENCRYPTION_KEY` (32-byte; hex or base64 accepted).
+- Added `scripts/restore-backup.mjs` for decrypting and previewing encrypted backups.
